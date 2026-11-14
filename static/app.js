@@ -207,6 +207,10 @@
   const STEPS = [['summary', 'About you'], ['interview', 'Skills interview'], ['interview-roadmap', 'Your plan']];
   const DEMO = window.DEMO;
   const isDemo = () => !!(DEMO && store.get('demo', false));
+  // Demo only: says where the words on a card come from.
+  const sourceBadge = (source) => source === 'gemini'
+    ? '<span class="source gemini" title="Recorded from a real Gemini run of this interview">✦ Real Gemini response</span>'
+    : '<span class="source scripted" title="Written by hand for this demo">✎ Scripted for the demo</span>';
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   // Skills the scripted interview has revealed after `n` answers.
   const demoSkills = (n) => DEMO.interview.slice(0, n).flatMap((s) => s.skills);
@@ -249,14 +253,14 @@
       const options = q && q.options.length ? `<div class="options" role="group">${q.options.map((o, i) => `<button type="button" class="opt ${many ? q.selection : 'single'}" data-pick="${i}" aria-pressed="false"><span class="mark" aria-hidden="true"></span>${esc(o)}</button>`).join('')}</div>` : '';
       const hint = q && q.selection === 'ranked' ? '<p class="small muted">Tap in order of importance.</p>' : q && q.selection === 'multiple' ? '<p class="small muted">Pick all that apply.</p>' : '';
       const current = !q ? `<button class="btn" id="start-interview" type="button">${data.turns.length ? 'Continue conversation' : 'Start conversation'}</button>`
-        : q.done ? `<div class="card stack">${q.intro ? `<p class="lede" style="white-space:pre-line">${esc(q.intro)}</p>` : ''}<h2>${esc(q.question)}</h2><div class="row"><button class="btn" id="build-plan" type="button">Build my plan</button></div></div>`
-        : `<div class="card stack">${q.intro ? `<p class="lede" style="white-space:pre-line">${esc(q.intro)}</p>` : ''}<h2>${esc(q.question)}</h2>${hint}${options}
-          <label for="interview-answer"${q.options.length && isDemo() ? ' hidden' : ''}>${q.options.length ? 'Or type your own answer' : 'Your answer'}</label><textarea class="field" id="interview-answer" maxlength="4000"${q.options.length && isDemo() ? ' hidden' : ''}></textarea>
+        : q.done ? `<div class="card stack">${isDemo() ? sourceBadge(q.source) : ''}${q.intro ? `<p class="lede" style="white-space:pre-line">${esc(q.intro)}</p>` : ''}<h2>${esc(q.question)}</h2><div class="row"><button class="btn" id="build-plan" type="button">Build my plan</button></div></div>`
+        : `<div class="card stack">${isDemo() ? sourceBadge(q.source) : ''}${q.intro ? `<p class="lede" style="white-space:pre-line">${esc(q.intro)}</p>` : ''}<h2>${esc(q.question)}</h2>${hint}${options}
+          <label for="interview-answer"${q.options.length && isDemo() && !q.typed ? ' hidden' : ''}>${q.options.length ? 'Or type your own answer' : 'Your answer'}</label><textarea class="field" id="interview-answer" maxlength="4000"${q.options.length && isDemo() && !q.typed ? ' hidden' : ''}></textarea>${isDemo() ? '<p class="small muted">✎ Melissa’s answer is pre-filled for the demo.</p>' : ''}
           <div class="row"><button class="btn" id="answer" type="button">Continue</button><button class="btn ghost" id="skip-question" type="button">Skip question</button></div></div>`;
       const demo = isDemo();
       const found = demo ? demoSkills(data.turns.length) : [];
       const fresh = demo ? DEMO.interview[data.turns.length - 1] : null;
-      const skillPanel = demo && data.turns.length ? `<div class="card stack skills-found"><div class="row spread"><h2>Your skill profile</h2><span class="chip gold">${found.length} skill${found.length === 1 ? '' : 's'} found</span></div>
+      const skillPanel = found.length ? `<div class="card stack skills-found"><div class="row spread"><h2>Your skill profile</h2><span class="chip gold">${found.length} skill${found.length === 1 ? '' : 's'} found</span></div>
         <div class="chips">${found.map((x) => `<span class="chip${fresh && fresh.skills.includes(x) ? ' pop' : ''}">${esc(x)}</span>`).join('')}</div></div>` : '';
       const progress = demo && q && !q.done ? `<p class="eyebrow">Question ${data.turns.length + 1} of ${DEMO.interview.length}</p>` : '';
       app.innerHTML = head('Skills interview', 'Let’s find what you already have.', demo ? 'We never ask “what are your skills?” We ask what you did.' : 'Share only what you are comfortable sharing. Your profile and conversation will be sent to Google Gemini to generate questions and your roadmap. You can skip a question or finish at any time.') +
@@ -343,7 +347,7 @@
     const plan = state.interview.roadmap;
     if (plan) {
       const findings = (items) => items.map((x) => `<li><strong>${esc(x.name)}</strong>: ${esc(x.assessment)} <span class="muted">Evidence: ${esc(x.evidence)}</span></li>`).join('');
-      app.innerHTML = head('Your roadmap', 'A plan built around you.', esc(plan.summary)) +
+      app.innerHTML = head('Your roadmap', 'A plan built around you.', esc(plan.summary)) + (isDemo() ? `<p style="margin:-8px 0 16px">${sourceBadge()}</p>` : '') +
         `<div class="card stack"><h2>Your skill profile</h2><ul>${findings(plan.strengths)}</ul></div>` +
         (plan.gap_line ? `<div class="card stack" style="margin-top:16px"><div class="row spread"><h2>Your career break, rewritten</h2><button class="btn ghost small" id="copy-gap" type="button">Copy</button></div><p class="quote">${esc(plan.gap_line)}</p><p class="small muted">Use this on your resume and LinkedIn, and as the start of your answer in interviews.</p></div>` : '') +
         ((plan.pathways || []).length ? `<h2 style="margin:28px 0 14px">Pathways to explore</h2>` + plan.pathways.map((x) => `<div class="card stack"><h2>${esc(x.name)}</h2><p><strong>Why it fits:</strong> ${esc(x.why_it_fits)}</p><p><strong>What it needs:</strong> ${esc(x.what_it_needs)}</p><p><strong>How it fits your life:</strong> ${esc(x.how_it_fits_life)}</p><p><strong>First step:</strong> ${esc(x.first_step)}</p><p class="small muted">${esc(x.reality_check)}</p></div>`).join('') : '') +

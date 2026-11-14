@@ -263,3 +263,8 @@ select.field { appearance: none; background-image: linear-gradient(45deg, transp
 .chip.pop { animation: pop .6s ease-out both; background: var(--gold-soft); font-weight: 600; }
 @keyframes pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .chip.pop { animation: none; } }
+
+/* Demo only: where a card's words come from */
+.source { align-self: flex-start; display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: .78rem; font-weight: 600; letter-spacing: .02em; }
+.source.gemini { background: #e8f0fe; color: #1a56c4; border: 1px solid #a9c4f5; }
+.source.scripted { background: transparent; color: var(--muted); border: 1px dashed var(--line); }

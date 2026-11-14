@@ -12,7 +12,7 @@ The questionnaire and adaptive conversation run through two local servers. Insta
     uvicorn app.main:app --reload --port 8001
     python3 server.py
 
-The conversation sends the questionnaire profile and interview answers to Google Gemini when the user starts the interview or generates a roadmap. Answers and the generated roadmap are stored in browser localStorage. Do not enter sensitive personal information. Edit `skills/SKILL.md` to change the skill guidance loaded for future model requests. Model-generated guidance and resources should be verified.
+The conversation sends the questionnaire profile and interview answers to Google Gemini when the user starts the interview or generates a roadmap. Answers and the generated roadmap are stored in browser localStorage. Do not enter sensitive personal information. The interview follows `skills/SKILL.md` plus the reference files in `skills/references/` that each step needs (see `QUESTION_REFERENCES` and `ROADMAP_REFERENCES` in `app/interview.py`); edit them to change the interview. The same folder is the `/interview` skill in Claude Code. Model-generated guidance and resources should be verified.
 
 The frontend server can also run on its own, but the conversation requires the FastAPI server:
 

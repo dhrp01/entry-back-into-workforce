@@ -235,27 +235,57 @@
     const data = state.interview;
     const save = () => store.set('interview', data);
     const payload = () => ({ profile: state.profile, turns: data.turns });
+    const picked = [];   // option indexes, in tap order
     const draw = () => {
+      const q = data.question ? { intro: '', options: [], selection: 'single', done: false, ...(data.current || {}), question: data.question } : null;
+      const many = q && q.selection !== 'single';
+      const options = q && q.options.length ? `<div class="options" role="group">${q.options.map((o, i) => `<button type="button" class="opt ${many ? q.selection : 'single'}" data-pick="${i}" aria-pressed="false"><span class="mark" aria-hidden="true"></span>${esc(o)}</button>`).join('')}</div>` : '';
+      const hint = q && q.selection === 'ranked' ? '<p class="small muted">Tap in order of importance.</p>' : q && q.selection === 'multiple' ? '<p class="small muted">Pick all that apply.</p>' : '';
+      const current = !q ? `<button class="btn" id="start-interview" type="button">${data.turns.length ? 'Continue conversation' : 'Start conversation'}</button>`
+        : q.done ? `<div class="card stack">${q.intro ? `<p class="lede" style="white-space:pre-line">${esc(q.intro)}</p>` : ''}<h2>${esc(q.question)}</h2><div class="row"><button class="btn" id="build-plan" type="button">Build my plan</button></div></div>`
+        : `<div class="card stack">${q.intro ? `<p class="lede" style="white-space:pre-line">${esc(q.intro)}</p>` : ''}<h2>${esc(q.question)}</h2>${hint}${options}
+          <label for="interview-answer">${q.options.length ? 'Or type your own answer' : 'Your answer'}</label><textarea class="field" id="interview-answer" maxlength="4000"></textarea>
+          <div class="row"><button class="btn" id="answer" type="button">Continue</button><button class="btn ghost" id="skip-question" type="button">Skip question</button></div></div>`;
       app.innerHTML = head('Conversation', 'Let’s explore your experience.', 'Share only what you are comfortable sharing. Your profile and conversation will be sent to Google Gemini to generate questions and your roadmap. You can skip a question or finish at any time.') +
-        data.turns.map((t) => `<div class="card stack"><strong>${esc(t.question)}</strong><p>${esc(t.answer)}</p></div>`).join('') +
-        (data.question ? `<div class="card stack"><h2>${esc(data.question)}</h2><label for="interview-answer">Your answer</label><textarea class="field" id="interview-answer" maxlength="4000"></textarea><div class="row"><button class="btn" id="answer" type="button">Continue</button><button class="btn ghost" id="skip-question" type="button">Skip question</button></div></div>` : `<button class="btn" id="start-interview" type="button">${data.turns.length ? 'Continue conversation' : 'Start conversation'}</button>`) +
-        `<div class="row" style="margin-top:20px"><button class="btn ghost" id="finish-interview" type="button">Generate my roadmap</button></div><p class="small muted" id="interview-status" role="status"></p>`;
+        data.turns.map((t) => `<div class="card stack"><strong>${esc(t.question)}</strong><p>${esc(t.answer)}</p></div>`).join('') + current +
+        (q && q.done ? '' : `<div class="row" style="margin-top:20px"><button class="btn ghost" id="finish-interview" type="button">Generate my roadmap</button></div>`) +
+        '<p class="small muted" id="interview-status" role="status"></p>';
       const ask = async () => {
         $('#interview-status').textContent = 'Preparing your next question…';
         $$('button', app).forEach((b) => { b.disabled = true; });
-        try { const result = await post('/api/interview/question', payload()); data.question = result.question; save(); draw(); }
+        try { const result = await post('/api/interview/question', payload()); data.question = result.question; data.current = result; save(); picked.length = 0; draw(); }
         catch (err) { $('#interview-status').textContent = err.message; $$('button', app).forEach((b) => { b.disabled = false; }); }
       };
-      if ($('#start-interview')) $('#start-interview').onclick = ask;
-      const submit = (answer) => { data.turns.push({ question: data.question, answer }); data.question = ''; data.roadmap = null; save(); draw(); ask(); };
-      if ($('#answer')) $('#answer').onclick = () => { const answer = $('#interview-answer').value.trim(); if (answer) submit(answer); else $('#interview-status').textContent = 'Enter an answer or skip this question.'; };
-      if ($('#skip-question')) $('#skip-question').onclick = () => submit('Skipped');
-      $('#finish-interview').onclick = async () => {
-        $('#interview-status').textContent = 'Building your roadmap…';
+      const finish = async () => {
+        $('#interview-status').textContent = 'Building your plan. This can take up to a minute…';
         $$('button', app).forEach((b) => { b.disabled = true; });
         try { data.roadmap = await post('/api/interview/roadmap', payload()); save(); location.hash = '#/interview-roadmap'; }
         catch (err) { $('#interview-status').textContent = err.message; $$('button', app).forEach((b) => { b.disabled = false; }); }
       };
+      const submit = (answer) => { data.turns.push({ question: data.question, answer }); data.question = ''; data.current = null; data.roadmap = null; save(); draw(); ask(); };
+      if ($('#start-interview')) $('#start-interview').onclick = ask;
+      $$('[data-pick]').forEach((b) => {
+        b.onclick = () => {
+          const i = +b.dataset.pick;
+          if (!many) { submit(q.options[i]); return; }
+          const at = picked.indexOf(i);
+          if (at < 0) picked.push(i); else picked.splice(at, 1);
+          $$('[data-pick]').forEach((x) => {
+            const n = picked.indexOf(+x.dataset.pick);
+            x.setAttribute('aria-pressed', String(n >= 0));
+            if (q.selection === 'ranked') x.querySelector('.mark').textContent = n >= 0 ? String(n + 1) : '';
+          });
+        };
+      });
+      if ($('#answer')) $('#answer').onclick = () => {
+        const chosen = picked.map((i) => q.options[i]).join(q.selection === 'ranked' ? ' > ' : '; ');
+        const typed = $('#interview-answer').value.trim();
+        const answer = [chosen, typed].filter(Boolean).join('; ');
+        if (answer) submit(answer); else $('#interview-status').textContent = q.options.length ? 'Pick an option, type an answer, or skip this question.' : 'Enter an answer or skip this question.';
+      };
+      if ($('#skip-question')) $('#skip-question').onclick = () => submit('Skipped');
+      if ($('#build-plan')) $('#build-plan').onclick = finish;
+      if ($('#finish-interview')) $('#finish-interview').onclick = finish;
     };
     draw();
   }
@@ -293,7 +323,9 @@
     if (plan) {
       const findings = (items) => items.map((x) => `<li><strong>${esc(x.name)}</strong>: ${esc(x.assessment)} <span class="muted">Evidence: ${esc(x.evidence)}</span></li>`).join('');
       app.innerHTML = head('Your roadmap', 'A plan built around you.', esc(plan.summary)) +
-        `<div class="card stack"><h2>Strengths</h2><ul>${findings(plan.strengths)}</ul><h2>Areas to explore or develop</h2><ul>${findings(plan.growth_areas)}</ul><h2>Still to clarify</h2><ul>${plan.unknowns.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` +
+        `<div class="card stack"><h2>Your skill profile</h2><ul>${findings(plan.strengths)}</ul></div>` +
+        ((plan.pathways || []).length ? `<h2 style="margin:28px 0 14px">Pathways to explore</h2>` + plan.pathways.map((x) => `<div class="card stack"><h2>${esc(x.name)}</h2><p><strong>Why it fits:</strong> ${esc(x.why_it_fits)}</p><p><strong>What it needs:</strong> ${esc(x.what_it_needs)}</p><p><strong>How it fits your life:</strong> ${esc(x.how_it_fits_life)}</p><p><strong>First step:</strong> ${esc(x.first_step)}</p><p class="small muted">${esc(x.reality_check)}</p></div>`).join('') : '') +
+        `<div class="card stack" style="margin-top:16px"><h2>Areas to explore or develop</h2><ul>${findings(plan.growth_areas)}</ul><h2>Still to clarify</h2><ul>${plan.unknowns.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` +
         plan.steps.map((s, i) => `<div class="card stack"><h2>${i + 1}. ${esc(s.title)}</h2><p>${esc(s.action)}</p><p><strong>Resources:</strong> ${esc(s.resource_guidance)}</p><p class="muted">${esc(s.timeframe)}</p></div>`).join('') +
         '<p class="small muted">AI-generated guidance is informational; verify resources and requirements before acting.</p><a href="#/interview">Continue the conversation</a>';
       return;

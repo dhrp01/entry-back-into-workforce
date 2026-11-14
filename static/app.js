@@ -297,8 +297,6 @@
           if (q.selection === 'ranked') x.querySelector('.mark').textContent = n >= 0 ? String(n + 1) : '';
         });
         $('#interview-answer').value = extra.join('; ');
-        // Steps that are not highlights answer themselves, so the demo stops only on the good parts.
-        if (q.demo_skip) setTimeout(() => { if ($('#answer')) $('#answer').click(); }, 300);
       }
       const card = $$('.card', app).pop();
       if (q && card) card.scrollIntoView({ block: 'start', behavior: 'smooth' });

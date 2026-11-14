@@ -76,7 +76,7 @@ Discover assessment → pathway suggestions → resume & gap-story builder → c
   scraped because their terms prohibit it. The recruiter button opens a LinkedIn
   people search in the visitor's own account.
 - Job results are cached on the server for an hour per source.
-- Resume upload accepts pasted text or a .txt file. PDF and Word parsing is not built yet.
+- Resume upload accepts text-based PDF files only (up to 2 MB and 20 pages). The original PDF is previewed in the browser; extracted text is used for review. Scanned PDFs and Word files are not supported. Install `pypdf` from requirements.txt to enable PDF extraction.
 
 ---
 

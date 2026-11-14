@@ -7,6 +7,9 @@ Serves the single-page app in ./static and a small JSON API. No user data is
 stored on the server: the profile lives in the browser and is sent with each
 request.
 """
+import base64
+import binascii
+import io
 import json
 import mimetypes
 import os
@@ -17,7 +20,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC = os.path.join(ROOT, "static")
-MAX_BODY = 400 * 1024
+MAX_BODY = 3 * 1024 * 1024
+MAX_PDF = 2 * 1024 * 1024
 
 
 def load_env(path):
@@ -63,6 +67,30 @@ def resume(body):
     return ai.resume(profile, text, starter) or starter
 
 
+def extract_resume_pdf(body):
+    from pypdf import PdfReader
+
+    try:
+        data = base64.b64decode(body.get("pdf", ""), validate=True)
+        if len(data) > MAX_PDF or not data.startswith(b"%PDF-"):
+            raise ValueError("Please upload a PDF no larger than 2 MB.")
+        reader = PdfReader(io.BytesIO(data))
+        if reader.is_encrypted:
+            raise ValueError("Please upload an unlocked PDF.")
+        if len(reader.pages) > 20:
+            raise ValueError("Please upload a PDF of 20 pages or fewer.")
+        text = "\n\n".join(page.extract_text(extraction_mode="layout") or "" for page in reader.pages).strip()
+    except (binascii.Error, TypeError):
+        raise ValueError("Please upload a valid PDF.") from None
+    except ValueError:
+        raise
+    except Exception:
+        raise ValueError("Could not read that PDF. Please upload a valid, unlocked PDF.") from None
+    if len(text) < 40:
+        raise ValueError("No readable text found in this PDF. Please upload a text-based PDF, not a scan.")
+    return {"text": text[:60000]}
+
+
 def interview_proxy(path, body):
     url = os.environ.get("CONVERSATION_API_URL", "http://127.0.0.1:8001").rstrip("/") + path
     request = Request(url, data=json.dumps(body).encode("utf-8"), headers={"Content-Type": "application/json"}, method="POST")
@@ -87,6 +115,7 @@ ROUTES = {
     "/api/courses": lambda b: {"courses": engine.pick_courses(b.get("profile") or {})},
     "/api/refresher": refresher,
     "/api/resume": resume,
+    "/api/resume/pdf": extract_resume_pdf,
     "/api/jobs": lambda b: jobs.find_jobs(b.get("profile") or {}),
     "/api/coach/start": coach.start,
     "/api/plan": coach.build_plan,

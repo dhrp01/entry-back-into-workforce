@@ -1,4 +1,5 @@
-# Optional. The app runs on the Python standard library alone.
+# PDF resume text extraction
+pypdf>=5,<7
 
 # The chat coach (Gemini). Requires Python 3.10 or later.
 google-genai==2.33.0; python_version >= "3.10"

@@ -11,6 +11,8 @@ from google import genai
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 
+from rtw.skills import load_skill_guidance
+
 router = APIRouter(prefix='/interview')
 SKILLS = Path(__file__).resolve().parent.parent / 'skills' / 'SKILL.md'
 MAX_TURNS = 60
@@ -196,7 +198,7 @@ def generate(request: InterviewRequest, schema, task: str, references=()):
     try:
         prompt = (
             APP_RULES + '\nTask: ' + task
-            + '\n\nSkill guidance:\n' + SKILLS.read_text(encoding='utf-8') + _references(references)
+            + '\n\nSkill guidance:\n' + load_skill_guidance() + _references(references)
             + '\n\n' + onboarding_context(request.profile)
             + '\n\nConversation so far: ' + json.dumps([t.model_dump() for t in request.turns])
         )

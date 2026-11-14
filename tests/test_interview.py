@@ -29,7 +29,7 @@ def test_interview_passes_profile_and_history(monkeypatch):
 def test_skill_file_is_loaded_for_each_request(monkeypatch, tmp_path):
     skills = tmp_path / 'SKILL.md'
     skills.write_text('# Custom skill\nAsk about negotiation.', encoding='utf-8')
-    monkeypatch.setattr('app.interview.SKILLS', skills)
+    monkeypatch.setattr('rtw.skills.SKILL_FILE', skills)
     monkeypatch.setenv('GEMINI_API_KEY', 'test')
     prompts = []
 

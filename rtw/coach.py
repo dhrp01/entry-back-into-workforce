@@ -21,6 +21,7 @@ import os
 import sys
 
 from . import engine
+from .skills import load_skill_guidance
 from .data import BREAK_REASONS, BREAK_SKILLS, FIELDS, WORRIES
 
 try:
@@ -377,7 +378,7 @@ def stream_reply(body):
     if previous is None:
         # The first turn also sends the greeting so the model knows what it opened with.
         text = '(You opened with: "%s")\n\n%s' % (_clip(body.get("greeting"), 700), text)
-    system = (INTERVIEW_PROMPT if interviewing else COACH_PROMPT) + "\n\n" + build_context(body, with_plan=not interviewing)
+    system = (INTERVIEW_PROMPT if interviewing else COACH_PROMPT) + "\n\nSKILL GUIDANCE\n" + load_skill_guidance() + "\n\n" + build_context(body, with_plan=not interviewing)
 
     held = ""
     for kind, value in _stream_text(system, text, previous):
@@ -448,7 +449,8 @@ def build_plan(body):
             "Today: %s" % datetime.date.today().isoformat(),
             "", "COURSES THE APP CAN OFFER"] + _course_lines(profile))
     try:
-        data = _extract_json("".join(value for kind, value in _stream_text(PLAN_PROMPT, request) if kind == "text"))
+        system = PLAN_PROMPT + "\n\nSKILL GUIDANCE\n" + load_skill_guidance()
+        data = _extract_json("".join(value for kind, value in _stream_text(system, request) if kind == "text"))
         weeks = _clean_weeks(data.get("weeks"), profile)
         if len(weeks) < 3:
             raise ValueError("the planner returned too few usable weeks")

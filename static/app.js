@@ -51,6 +51,13 @@
     jobs: null,
     remoteOnly: false,
   };
+  // The questionnaire gained new questions; restart its position for existing
+  // profiles so an old saved step cannot skip them. Keep all saved answers.
+  if (store.get('quizVersion', 0) < 1) {
+    state.step = 0;
+    store.set('step', 0);
+    store.set('quizVersion', 1);
+  }
   const saveProfile = () => store.set('profile', state.profile);
 
   async function cached(key, path, body) {
@@ -70,7 +77,8 @@
       { id: 'lastRole', section: 0, type: 'text', q: 'What was your most recent role?', hint: 'The job title you held before you stepped away.', placeholder: 'For example, Marketing manager' },
       { id: 'field', section: 0, type: 'single', cols: true, q: 'Which field was that in?', options: c.fields.map((f) => [f.key, f.label]) },
       { id: 'awayDate', section: 0, type: 'month', past: true, q: 'When did you step away from work?', hint: 'A rough month is fine. It lets us show you exactly what has changed since.' },
-      { id: 'strengths', section: 0, type: 'text', q: 'What were you known for being good at?', hint: 'List two or three things, separated by commas. Think of what colleagues came to you for.', placeholder: 'For example, calming difficult clients, planning, writing' },
+      { id: 'strengths', section: 0, type: 'text', q: 'Which skills and tools are you most confident in?', hint: 'List your strongest skills and tools, separated by commas.', placeholder: 'For example, project planning, Excel, writing' },
+      { id: 'education', section: 0, type: 'text', q: 'Tell us about your education.', hint: 'Include any qualifications, training or education you would like to share.', placeholder: 'For example, BA in Business or a technical certificate' },
       { id: 'loved', section: 0, type: 'textarea', optional: true, q: 'What did you enjoy most about that work?', hint: 'Optional. This helps point you at roles you will want to stay in.' },
 
       { id: 'breakReasons', section: 1, type: 'multi', cols: true, q: 'What filled your time while you were away?', hint: 'Choose all that apply.', options: c.breakReasons.map((r) => [r.key, r.label]) },
@@ -87,6 +95,7 @@
       { id: 'startDate', section: 3, type: 'month', q: 'When would you like to be back at work?', hint: 'A target, not a deadline. Your plan is paced to this.' },
       { id: 'hoursPerWeek', section: 3, type: 'single', q: 'How much time can you give to preparing each week?', options: [['2', 'About 2 hours'], ['5', 'About 5 hours'], ['10', 'About 10 hours'], ['15', '15 hours or more']] },
 
+      { id: 'improvement', section: 4, type: 'textarea', q: 'Where would you like to improve most?', hint: 'Think about skills, tools, confidence or anything else you want to work on.' },
       { id: 'confidence', section: 4, type: 'scale', q: 'How ready do you feel today?', hint: 'There is no wrong answer. This is your starting line, and it will move.' },
       { id: 'worries', section: 4, type: 'multi', optional: true, q: 'What worries you most about going back?', hint: 'Choose any that apply. Each one has a step in your plan.', options: c.worries.map((w) => [w.key, w.label]) },
     ];
@@ -124,7 +133,7 @@
       let weeks = 8;
       if (m) weeks = Math.max(4, Math.min(12, Math.floor((new Date(+m[1], +m[2] - 1, 1) - new Date()) / 6048e5)));
       const hours = weeks * (+p.hoursPerWeek || 5);
-      return { title: `That gives you about ${hours} hours.`, body: `<p>${weeks} weeks at ${esc(p.hoursPerWeek || 5)} hours a week is enough to finish a short certificate, rebuild your resume and send your first applications. Your plan spreads it out so no week feels heavy.</p><p class="muted">Last section: two quick questions.</p>` };
+      return { title: `That gives you about ${hours} hours.`, body: `<p>${weeks} weeks at ${esc(p.hoursPerWeek || 5)} hours a week is enough to finish a short certificate, rebuild your resume and send your first applications. Your plan spreads it out so no week feels heavy.</p><p class="muted">Last section: a few quick questions.</p>` };
     }
     return { title: 'That is everything we need.', body: '<p>You have just done the hardest part, which is starting. Your summary, plan and first three steps are ready.</p>', final: true };
   }
@@ -423,7 +432,12 @@
   // --------------------------------------------------------------- router ---
   const VIEWS = { summary: viewSummary, roadmap: viewRoadmap, refresher: viewRefresher, courses: viewCourses, resume: viewResume, jobs: viewJobs };
   async function route() {
-    const key = (location.hash.replace(/^#\/?/, '') || '').split('?')[0];
+    let key = (location.hash.replace(/^#\/?/, '') || '').split('?')[0];
+    // New and returning unfinished visitors go straight to their saved question.
+    if (!state.done && key !== 'quiz') {
+      key = 'quiz';
+      history.replaceState(null, '', '#/quiz');
+    }
     const nav = $('#nav');
     nav.hidden = !state.done || key === 'quiz';
     $('#reset').hidden = !Object.keys(state.profile).length;

@@ -11,6 +11,8 @@ import json
 import mimetypes
 import os
 import sys
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -61,7 +63,25 @@ def resume(body):
     return ai.resume(profile, text, starter) or starter
 
 
+def interview_proxy(path, body):
+    url = os.environ.get("CONVERSATION_API_URL", "http://127.0.0.1:8001").rstrip("/") + path
+    request = Request(url, data=json.dumps(body).encode("utf-8"), headers={"Content-Type": "application/json"}, method="POST")
+    try:
+        with urlopen(request, timeout=90) as response:
+            return json.load(response)
+    except HTTPError as exc:
+        try:
+            detail = json.load(exc).get("detail", "Conversation request failed.")
+        except (ValueError, AttributeError):
+            detail = "Conversation request failed."
+        raise ValueError(str(detail)) from None
+    except (URLError, TimeoutError):
+        raise ValueError("Conversation server unavailable. Start the FastAPI server on port 8001.") from None
+
+
 ROUTES = {
+    "/api/interview/question": lambda b: interview_proxy("/interview/question", b),
+    "/api/interview/roadmap": lambda b: interview_proxy("/interview/roadmap", b),
     "/api/summary": lambda b: engine.build_summary(b.get("profile") or {}),
     "/api/roadmap": lambda b: engine.build_roadmap(b.get("profile") or {}),
     "/api/courses": lambda b: {"courses": engine.pick_courses(b.get("profile") or {})},

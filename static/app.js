@@ -55,6 +55,7 @@
     resumeText: store.get('resume', ''),
     jobs: null,
     remoteOnly: false,
+    interview: store.get('interview', { turns: [], question: '', roadmap: null }),
     chat: store.get('chat', null),      // { messages: [{role, text}], previousId, greeting, suggestions, ready }
     plan: store.get('plan', null),      // the roadmap: { mode, understood, decisions, weeks, ... }
   };
@@ -198,13 +199,15 @@
     state.done = true; store.set('done', true);
     state.cache = {}; store.set('cache', {});     // answers changed: rebuild everything
     state.jobs = null;
-    state.plan = null; store.set('plan', null);   // the roadmap is rebuilt after the conversation
-    if (state.chat && state.chat.messages.length < 2) { state.chat = null; store.set('chat', null); }
-    location.hash = '#/chat';
+    state.interview = { turns: [], question: '', roadmap: null };
+    store.set('interview', state.interview);
+    state.plan = null; store.set('plan', null);
+    state.chat = null; store.set('chat', null);
+    location.hash = '#/interview';
   }
 
   // ---------------------------------------------------------------- views ---
-  const STEPS = [['chat', 'Conversation'], ['roadmap', 'Roadmap'], ['summary', 'Summary'], ['refresher', 'What changed'], ['courses', 'Courses'], ['resume', 'Resume'], ['jobs', 'Jobs']];
+  const STEPS = [['interview', 'Skills interview'], ['chat', 'Coach chat'], ['summary', 'Summary'], ['roadmap', 'Roadmap'], ['refresher', 'What changed'], ['courses', 'Courses'], ['resume', 'Resume'], ['jobs', 'Jobs']];
   const head = (eyebrow, title, lede) => `<div class="head"><p class="eyebrow">${esc(eyebrow)}</p><h1>${esc(title)}</h1><p class="lede">${lede}</p></div>`;
   const loading = (text) => `<div class="loading"><span class="spinner"></span><span>${esc(text)}</span></div>`;
   const failed = (err) => `<div class="note warm"><strong>That did not load.</strong> ${esc(err.message || err)} <button class="link" type="button" onclick="location.reload()">Try again</button></div>`;
@@ -229,6 +232,35 @@
         <li><strong>Resume edits</strong><span class="muted small">Specific changes, including how to present the gap.</span></li>
         <li><strong>Live jobs and recruiters</strong><span class="muted small">Current postings ranked for you, with who to contact.</span></li>
       </ol></section>`;
+  }
+
+  async function viewInterview() {
+    const data = state.interview;
+    const save = () => store.set('interview', data);
+    const payload = () => ({ profile: state.profile, turns: data.turns });
+    const draw = () => {
+      app.innerHTML = head('Conversation', 'Let’s explore your experience.', 'Share only what you are comfortable sharing. Your profile and conversation will be sent to Google Gemini to generate questions and your roadmap. You can skip a question or finish at any time.') +
+        data.turns.map((t) => `<div class="card stack"><strong>${esc(t.question)}</strong><p>${esc(t.answer)}</p></div>`).join('') +
+        (data.question ? `<div class="card stack"><h2>${esc(data.question)}</h2><label for="interview-answer">Your answer</label><textarea class="field" id="interview-answer" maxlength="4000"></textarea><div class="row"><button class="btn" id="answer" type="button">Continue</button><button class="btn ghost" id="skip-question" type="button">Skip question</button></div></div>` : `<button class="btn" id="start-interview" type="button">${data.turns.length ? 'Continue conversation' : 'Start conversation'}</button>`) +
+        `<div class="row" style="margin-top:20px"><button class="btn ghost" id="finish-interview" type="button">Generate my roadmap</button></div><p class="small muted" id="interview-status" role="status"></p>`;
+      const ask = async () => {
+        $('#interview-status').textContent = 'Preparing your next question…';
+        $$('button', app).forEach((b) => { b.disabled = true; });
+        try { const result = await post('/api/interview/question', payload()); data.question = result.question; save(); draw(); }
+        catch (err) { $('#interview-status').textContent = err.message; $$('button', app).forEach((b) => { b.disabled = false; }); }
+      };
+      if ($('#start-interview')) $('#start-interview').onclick = ask;
+      const submit = (answer) => { data.turns.push({ question: data.question, answer }); data.question = ''; data.roadmap = null; save(); draw(); ask(); };
+      if ($('#answer')) $('#answer').onclick = () => { const answer = $('#interview-answer').value.trim(); if (answer) submit(answer); else $('#interview-status').textContent = 'Enter an answer or skip this question.'; };
+      if ($('#skip-question')) $('#skip-question').onclick = () => submit('Skipped');
+      $('#finish-interview').onclick = async () => {
+        $('#interview-status').textContent = 'Building your roadmap…';
+        $$('button', app).forEach((b) => { b.disabled = true; });
+        try { data.roadmap = await post('/api/interview/roadmap', payload()); save(); location.hash = '#/interview-roadmap'; }
+        catch (err) { $('#interview-status').textContent = err.message; $$('button', app).forEach((b) => { b.disabled = false; }); }
+      };
+    };
+    draw();
   }
 
   async function viewSummary() {
@@ -257,6 +289,19 @@
       <div class="next">${s.firstSteps.map((f) => `<a href="#/${esc(f.step)}">${esc(f.text)}</a>`).join('')}</div>
       <p class="small muted" style="margin-top:24px"><a href="#/quiz">Edit my answers</a></p>`;
     $('#copy-gap').onclick = () => copy(s.gapLine);
+  }
+
+  async function viewInterviewRoadmap() {
+    const plan = state.interview.roadmap;
+    if (plan) {
+      const findings = (items) => items.map((x) => `<li><strong>${esc(x.name)}</strong>: ${esc(x.assessment)} <span class="muted">Evidence: ${esc(x.evidence)}</span></li>`).join('');
+      app.innerHTML = head('Your roadmap', 'A plan built around you.', esc(plan.summary)) +
+        `<div class="card stack"><h2>Strengths</h2><ul>${findings(plan.strengths)}</ul><h2>Areas to explore or develop</h2><ul>${findings(plan.growth_areas)}</ul><h2>Still to clarify</h2><ul>${plan.unknowns.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` +
+        plan.steps.map((s, i) => `<div class="card stack"><h2>${i + 1}. ${esc(s.title)}</h2><p>${esc(s.action)}</p><p><strong>Resources:</strong> ${esc(s.resource_guidance)}</p><p class="muted">${esc(s.timeframe)}</p></div>`).join('') +
+        '<p class="small muted">AI-generated guidance is informational; verify resources and requirements before acting.</p><a href="#/interview">Continue the conversation</a>';
+      return;
+    }
+    location.hash = '#/interview';
   }
 
   async function viewRoadmap() {
@@ -542,7 +587,7 @@
   }
 
   // --------------------------------------------------------------- router ---
-  const VIEWS = { summary: viewSummary, roadmap: viewRoadmap, refresher: viewRefresher, courses: viewCourses, resume: viewResume, jobs: viewJobs, chat: viewChat };
+  const VIEWS = { interview: viewInterview, "interview-roadmap": viewInterviewRoadmap, chat: viewChat, summary: viewSummary, roadmap: viewRoadmap, refresher: viewRefresher, courses: viewCourses, resume: viewResume, jobs: viewJobs };
   async function route() {
     let key = (location.hash.replace(/^#\/?/, '') || '').split('?')[0];
     // New and returning unfinished visitors go straight to their saved question.
@@ -564,7 +609,7 @@
   $('#reset').onclick = () => {
     if (!confirm('This clears your answers, plan progress and resume from this browser. Continue?')) return;
     store.clear();
-    Object.assign(state, { profile: {}, done: false, step: 0, cache: {}, ticks: {}, resumeText: '', jobs: null, chat: null, plan: null });
+    Object.assign(state, { profile: {}, done: false, step: 0, cache: {}, ticks: {}, resumeText: '', jobs: null, interview: { turns: [], question: '', roadmap: null }, chat: null, plan: null });
     location.hash = '#/'; route();
   };
 

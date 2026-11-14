@@ -1,0 +1,32 @@
+{
+  "model": "gemini-4-hydrogen",
+  "profile": {
+    "name": "Melissa",
+    "lastRole": "Elementary school teacher (2nd grade)",
+    "field": "education",
+    "strengths": "Organizing, budgeting spreadsheets, working with kids and parents",
+    "awayDate": "2014-08",
+    "improvement": "Feeling current with technology, LinkedIn, and job applications",
+    "startDate": "2027-01",
+    "education": "Bachelor's in Elementary Education; Utah teaching license"
+  },
+  "steps": [
+    {
+      "response": {
+        "intro": "Hi Melissa—welcome. Coming back to paid work after years at home is hard and very common, and you're in the right place. This interview has three short parts of about 4 to 5 minutes each, and you can skip any question or stop anytime. Part one is about your work story.",
+        "question": "You shared that your last paid role was teaching 2nd grade—roughly how long did you teach?",
+        "options": [
+          "Under 1 year",
+          "1–2 years",
+          "3–5 years",
+          "6–10 years",
+          "10+ years"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "3–5 years"
+    }
+  ],
+  "roadmap": null
+}

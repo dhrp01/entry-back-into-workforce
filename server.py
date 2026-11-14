@@ -114,6 +114,7 @@ def interview_proxy(path, body):
 ROUTES = {
     "/api/interview/question": lambda b: interview_proxy("/interview/question", b),
     "/api/interview/roadmap": lambda b: interview_proxy("/interview/roadmap", b),
+    "/api/interview/demo": lambda b: interview_proxy("/interview/demo", b),
     "/api/summary": lambda b: engine.build_summary(b.get("profile") or {}),
     "/api/roadmap": lambda b: engine.build_roadmap(b.get("profile") or {}),
     # Courses from the questionnaire and, when sent, the skills interview

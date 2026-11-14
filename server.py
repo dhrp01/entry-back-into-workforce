@@ -19,7 +19,11 @@ from urllib.request import Request, urlopen
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC = os.path.join(ROOT, "static")
+# The React app (web/) builds into web/dist. Serve it when it has been built
+# (cd web && npm install && npm run build); otherwise serve the original page.
+WEB_DIST = os.path.join(ROOT, "web", "dist")
+STATIC = WEB_DIST if os.path.isfile(os.path.join(WEB_DIST, "index.html")) else os.path.join(ROOT, "static")
+_gzip_cache = {}
 MAX_BODY = 3 * 1024 * 1024
 MAX_PDF = 2 * 1024 * 1024
 
@@ -39,7 +43,7 @@ def load_env(path):
 
 load_env(os.path.join(ROOT, ".env"))
 
-from rtw import ai, coach, engine, jobs  # noqa: E402  (after .env so keys are visible)
+from rtw import ai, coach, courses, engine, jobs  # noqa: E402  (after .env so keys are visible)
 from rtw.data import FIELDS  # noqa: E402
 
 
@@ -112,7 +116,9 @@ ROUTES = {
     "/api/interview/roadmap": lambda b: interview_proxy("/interview/roadmap", b),
     "/api/summary": lambda b: engine.build_summary(b.get("profile") or {}),
     "/api/roadmap": lambda b: engine.build_roadmap(b.get("profile") or {}),
-    "/api/courses": lambda b: {"courses": engine.pick_courses(b.get("profile") or {})},
+    # Courses from the questionnaire and, when sent, the skills interview
+    # (turns and findings). Without interview data this is the rule-based pick.
+    "/api/courses": courses.pick,
     "/api/refresher": refresher,
     "/api/resume": resume,
     "/api/resume/pdf": extract_resume_pdf,
@@ -125,12 +131,17 @@ ROUTES = {
 class Handler(BaseHTTPRequestHandler):
     server_version = "ReturnToWork/0.1"
 
-    def _send(self, status, payload, content_type="application/json; charset=utf-8"):
+    def _send(self, status, payload, content_type="application/json; charset=utf-8", cache="no-store", gz=None):
         data = payload if isinstance(payload, bytes) else json.dumps(payload).encode("utf-8")
+        if gz is not None:
+            data = gz
         self.send_response(status)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(data)))
-        self.send_header("Cache-Control", "no-store")
+        self.send_header("Cache-Control", cache)
+        if gz is not None:
+            self.send_header("Content-Encoding", "gzip")
+            self.send_header("Vary", "Accept-Encoding")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.end_headers()
         self.wfile.write(data)
@@ -147,9 +158,19 @@ class Handler(BaseHTTPRequestHandler):
         with open(target, "rb") as handle:
             body = handle.read()
         kind = mimetypes.guess_type(target)[0] or "application/octet-stream"
-        if kind.startswith("text/") or kind.endswith(("javascript", "json")):
+        text = kind.startswith("text/") or kind.endswith(("javascript", "json", "svg+xml"))
+        if text:
             kind += "; charset=utf-8"
-        self._send(200, body, kind)
+        # Built files have a content hash in their name, so browsers can keep them.
+        cache = "public, max-age=31536000, immutable" if path.startswith("/assets/") else "no-cache"
+        gz = None
+        if text and len(body) > 1024 and "gzip" in (self.headers.get("Accept-Encoding") or ""):
+            import gzip
+            key = (target, os.path.getmtime(target))
+            gz = _gzip_cache.get(key)
+            if gz is None:
+                gz = _gzip_cache[key] = gzip.compress(body, 6)
+        self._send(200, body, kind, cache=cache, gz=gz)
 
     def _stream_coach(self, body):
         """Send the coach's reply as newline-delimited JSON, one event per line."""
@@ -221,7 +242,7 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     port = int(os.environ.get("PORT", "8000"))
     server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    print("Return to Work is running at http://localhost:%d" % port)
+    print("MOMentum (Return to Work) is running at http://localhost:%d" % port)
     print("  AI features: %s" % ("on (%s)" % ai.MODEL if ai.enabled() else "off, using built-in versions (see README)"))
     print("  Conversation and dynamic roadmap (Gemini): %s" % ("on (%s)" % coach.MODEL if coach.status()["enabled"] else "off. " + coach.status()["reason"]))
     print("  Job sources: Remotive, Arbeitnow, Remote OK%s" % (", Adzuna" if jobs.adzuna_enabled() else ""))

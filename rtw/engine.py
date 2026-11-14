@@ -45,8 +45,18 @@ def _split_list(text):
 
 
 def field_of(profile):
+    """The person's field. The questionnaire no longer asks for it, so when it
+    is missing, infer it from words in their most recent job title."""
     key = profile.get("field")
-    return key if key in FIELDS else "other"
+    if key in FIELDS:
+        return key
+    words = set(re.findall(r"[a-z]+", str(profile.get("lastRole") or "").lower()))
+    best, hits = "other", 0
+    for name, field in FIELDS.items():
+        score = sum(1 for t in field["titles"] if (" " in t and t in str(profile.get("lastRole") or "").lower()) or t in words)
+        if score > hits:
+            best, hits = name, score
+    return best
 
 
 def target_role(profile):
@@ -141,9 +151,9 @@ def build_summary(profile):
         "worries": worries,
         "gapLine": gap_line(profile),
         "firstSteps": [
-            {"step": "chat", "text": "Talk with your coach so your roadmap fits your real life."},
-            {"step": "refresher", "text": "Read what changed in your field while you were away."},
-            {"step": "resume", "text": "Paste your resume and apply the top three edits."},
+            {"step": "interview", "text": "Do the skills interview so your roadmap fits your real life."},
+            {"step": "courses", "text": "Pick one course from your list and start it this week."},
+            {"step": "resume", "text": "Upload your resume and apply the top three edits."},
         ],
     }
 
@@ -264,7 +274,7 @@ def build_roadmap(profile):
         for _ in range(length):
             week_no += 1
             if week_no == 1:
-                learn = {"text": "Read your refresher and note three changes you want to explore.", "step": "refresher"}
+                learn = {"text": "Look through your course list and choose the one to start first.", "step": "courses"}
             elif course_index < len(study):
                 course = study[course_index]
                 finishing = remaining[course_index] <= learn_hours
@@ -276,7 +286,7 @@ def build_roadmap(profile):
             elif phase == 3:
                 learn = {"text": "Read up on your new employer: their product, recent news and the tools they use."}
             else:
-                learn = {"text": "Spend your learning time practising one tool from your refresher.", "step": "refresher"}
+                learn = {"text": "Spend your learning time practising one tool your target roles ask for.", "step": "courses"}
 
             career_text = take("career", phase)
             career = {"text": career_text}

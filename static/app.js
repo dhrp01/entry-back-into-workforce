@@ -18,6 +18,11 @@
     set(key, value) { try { localStorage.setItem('rtw.' + key, JSON.stringify(value)); } catch (e) { /* private mode */ } },
     clear() { try { Object.keys(localStorage).filter((k) => k.startsWith('rtw.')).forEach((k) => localStorage.removeItem(k)); } catch (e) { /* ignore */ } },
   };
+   
+   function clearUserSession() {
+      localStorage.clear(); // Clears all local profile state
+      window.location.href = "/"; // Reloads back to a clean slate
+  }
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const monthLabel = (ym) => { const m = /^(\d{4})-(\d{2})/.exec(ym || ''); return m ? MONTHS[+m[2] - 1] + ' ' + m[1] : ''; };
 

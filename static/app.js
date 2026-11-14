@@ -55,6 +55,7 @@
     resumeText: store.get('resume', ''),
     jobs: null,
     remoteOnly: false,
+    jobLocation: '',
     interview: store.get('interview', { turns: [], question: '', roadmap: null }),
     chat: store.get('chat', null),      // { messages: [{role, text}], previousId, greeting, suggestions, ready }
     plan: store.get('plan', null),      // the roadmap: { mode, understood, decisions, weeks, ... }
@@ -475,37 +476,44 @@
 
   function viewJobs() {
     const role = state.profile.targetRole || state.profile.lastRole || 'your target role';
-    const intro = head('Jobs', 'Live roles worth your time.', `Current postings, ranked for ${esc(role)} and the way you want to work. Each one comes with a way to find its recruiters.`);
+    const intro = head('Jobs', 'Live roles worth your time.', `Current postings ranked using ${esc(role)}${state.profile.targetRole && state.profile.lastRole && state.profile.targetRole.toLowerCase() !== state.profile.lastRole.toLowerCase() ? `, your previous role as ${esc(state.profile.lastRole)}` : ''} and your work preferences.`);
     const draw = () => {
       const j = state.jobs;
+      const locationForm = `<form id="job-location-form" class="row" style="margin-bottom:16px"><label for="job-location">Location</label><input id="job-location" type="search" placeholder="City, state or country" value="${esc(state.jobLocation)}"><button class="btn small" type="submit">${j ? 'Apply location' : 'Find jobs'}</button></form><p class="small muted">Filters the location listed on postings, including remote eligibility regions. Leave blank to search all locations.</p>`;
       if (!j) {
-        app.innerHTML = intro + `<div class="card stack"><p>We check public job boards now, so every result is a posting that is open today.</p><div class="row"><button class="btn" id="find" type="button">Find live jobs</button></div></div>`;
-        $('#find').onclick = fetchJobs; return;
+        app.innerHTML = intro + `<div class="card stack"><p>Search recent postings from public job boards. Check each listing for current availability and location eligibility.</p>${locationForm}</div>`;
+        $('#job-location-form').onsubmit = searchLocation; return;
       }
       const list = j.jobs.filter((x) => !state.remoteOnly || x.remote);
-      const ok = j.sources.filter((s) => s.ok).map((s) => s.name);
-      const bad = j.sources.filter((s) => !s.ok).map((s) => s.name);
-      let html = intro + `<div class="row spread" style="margin-bottom:16px"><span class="muted small">${j.scanned} postings checked from ${esc(ok.join(', ') || 'no sources')} at ${esc(j.fetchedAt.slice(11))}. ${list.length} match${list.length === 1 ? 'es' : ''} you.${bad.length ? ` ${esc(bad.join(', '))} did not respond.` : ''}</span>
+      const ok = [...new Set(j.sources.filter((s) => s.ok).map((s) => s.name))];
+      const bad = [...new Set(j.sources.filter((s) => !s.ok).map((s) => s.name))];
+      let html = intro + locationForm + `<div class="row spread" style="margin-bottom:16px"><span class="muted small">${j.scanned} postings checked from ${esc(ok.join(', ') || 'no sources')} at ${esc(j.fetchedAt.slice(11))}. ${list.length} match${list.length === 1 ? 'es' : ''} you.${bad.length ? ` ${esc(bad.join(', '))} did not respond.` : ''}</span>
         <span class="row"><label class="small"><input type="checkbox" id="remote-only"${state.remoteOnly ? ' checked' : ''}> Remote only</label><button class="btn ghost small" id="find" type="button">Refresh</button></span></div>`;
       if (!list.length) {
-        html += `<div class="note warm"><strong>No strong matches right now.</strong> These boards lean towards remote and European roles. Try a broader job title in <a href="#/quiz">your answers</a>${j.adzuna ? '' : ', or add a free Adzuna key for local listings (see the README)'}.</div>`;
+        html += `<div class="note warm"><strong>No matching jobs found.</strong> ${state.remoteOnly ? 'Try turning off Remote only, or clearing or broadening your location filter.' : 'Try clearing or broadening your location filter.'} These boards lean towards remote and European roles. Try a broader job title in <a href="#/quiz">your answers</a>${j.adzuna ? '' : ', or add a free Adzuna key for local listings (see the README)'}.</div>`;
       }
       html += list.map((x, i) => `<div class="card job"><div class="item-head"><div><h3>${esc(x.title)}</h3><p class="muted">${esc(x.company || 'Company not listed')} · ${esc(x.location || 'Location not listed')}</p></div><div class="match">${x.match}%<small>match</small></div></div>
         <ul class="reasons">${x.reasons.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>
         <p class="snippet">${esc(x.snippet)}${x.snippet.length >= 260 ? '…' : ''}</p>
         <div class="row" style="margin-top:14px"><a class="btn small" href="${safeUrl(x.url)}" target="_blank" rel="noopener noreferrer">View and apply</a>
-          ${x.recruiterUrl ? `<a class="btn ghost small" href="${safeUrl(x.recruiterUrl)}" target="_blank" rel="noopener noreferrer">Find recruiters on LinkedIn</a><button class="btn ghost small" data-msg="${i}" type="button">Copy a message to send</button>` : ''}
+          ${x.recruiterUrl ? `<button class="btn ghost small" data-msg="${i}" type="button">Copy a message to send</button>` : ''}
           <span class="muted small" style="margin-left:auto">${x.posted ? `Posted ${esc(x.posted)} · ` : ''}via ${esc(x.source)}</span></div></div>`).join('');
       html += nextStep('chat', 'Talk it through with your coach');
-      html += '<p class="small muted" style="margin-top:18px">The LinkedIn button opens a people search for recruiters at that company in your own LinkedIn account. Match scores are a guide based on your answers, not a prediction.</p>';
+      html += '<p class="small muted" style="margin-top:18px">Match scores are a guide based on your answers, not a prediction.</p>';
       app.innerHTML = html;
       $('#find').onclick = fetchJobs;
+      $('#job-location-form').onsubmit = searchLocation;
       $('#remote-only').onchange = (e) => { state.remoteOnly = e.target.checked; draw(); };
       $$('[data-msg]').forEach((b) => { b.onclick = () => copy(outreach(list[+b.dataset.msg])); });
     };
+    const searchLocation = (e) => {
+      e.preventDefault();
+      state.jobLocation = $('#job-location').value.trim();
+      fetchJobs();
+    };
     const fetchJobs = async () => {
       app.innerHTML = intro + loading('Checking job boards for current postings');
-      try { state.jobs = await post('/api/jobs', { profile: state.profile }); draw(); }
+      try { state.jobs = await post('/api/jobs', { profile: state.profile, location: state.jobLocation }); draw(); }
       catch (err) { app.innerHTML = intro + failed(err); }
     };
     draw();
@@ -652,7 +660,7 @@
   $('#reset').onclick = () => {
     if (!confirm('This clears your answers, plan progress and resume from this browser. Continue?')) return;
     store.clear();
-    Object.assign(state, { profile: {}, done: false, step: 0, cache: {}, ticks: {}, resumeText: '', jobs: null, interview: { turns: [], question: '', roadmap: null }, chat: null, plan: null });
+    Object.assign(state, { profile: {}, done: false, step: 0, cache: {}, ticks: {}, resumeText: '', jobs: null, remoteOnly: false, jobLocation: '', interview: { turns: [], question: '', roadmap: null }, chat: null, plan: null });
     location.hash = '#/'; route();
   };
 

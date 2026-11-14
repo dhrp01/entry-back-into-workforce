@@ -1,15 +1,14 @@
 """Stateless, profile-aware interview and planning endpoints."""
 import json
 import os
-from pathlib import Path
-
 from fastapi import APIRouter, HTTPException
 from google import genai
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 
+from rtw.skills import load_skill_guidance
+
 router = APIRouter(prefix='/interview')
-SKILLS = Path(__file__).resolve().parent.parent / 'skills' / 'SKILL.md'
 
 
 class Turn(BaseModel):
@@ -54,7 +53,7 @@ def generate(request: InterviewRequest, schema, task: str):
     if len(json.dumps(request.profile)) > 20000:
         raise HTTPException(422, 'Profile is too large.')
     try:
-        skills = SKILLS.read_text(encoding='utf-8')
+        skills = load_skill_guidance()
         prompt = (
             'You are a supportive, thorough career-return coach. The user may be a mother '
             'returning after time away; do not assume family circumstances, abilities, goals, '
@@ -68,7 +67,8 @@ def generate(request: InterviewRequest, schema, task: str):
             + task + '\nSkill guidance:\n' + skills
             + '\nUser data: ' + request.model_dump_json()
         )
-        response = genai.Client(api_key=key).models.generate_content(
+        client = genai.Client(api_key=key)
+        response = client.models.generate_content(
             model=os.getenv('GEMINI_MODEL', 'gemini-2.5-flash'), contents=prompt,
             config={'response_mime_type': 'application/json', 'response_schema': schema},
         )

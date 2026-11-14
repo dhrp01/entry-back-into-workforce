@@ -13,69 +13,6 @@
   "steps": [
     {
       "response": {
-        "intro": "Hi Melissa—welcome. Coming back to paid work after years at home is hard and very common, and you're in the right place. This interview has three short parts of about 4 to 5 minutes each, and you can skip any question or stop anytime. Part one is about your work story.",
-        "question": "You shared that your last paid role was teaching 2nd grade—roughly how long did you teach?",
-        "options": [
-          "Under 1 year",
-          "1–2 years",
-          "3–5 years",
-          "6–10 years",
-          "10+ years"
-        ],
-        "selection": "single",
-        "done": false
-      },
-      "answer": "3–5 years"
-    },
-    {
-      "response": {
-        "intro": "Three to five years teaching second grade is solid, hands-on experience, Melissa.",
-        "question": "What is one thing you did well in that teaching role—maybe something involving people, a goal, or a number?",
-        "options": [
-          "Trained or mentored aides, volunteers, or student teachers",
-          "Hit a student growth or reading goal",
-          "Fixed a recurring classroom or communication problem",
-          "Families or parents asked to have their kids in my class",
-          "Managed a classroom budget or saved money on supplies"
-        ],
-        "selection": "single",
-        "done": false
-      },
-      "answer": "Hit a student growth or reading goal"
-    },
-    {
-      "response": {
-        "intro": "Hitting a student growth or reading goal takes real planning, tracking, and follow-through—that gives us a strong detail for your resume.",
-        "question": "Roughly how many students did that goal cover?",
-        "options": [
-          "A small group (around 5–10 students)",
-          "Most of my class (around 15–20 students)",
-          "My whole class (around 20–30 students)",
-          "Multiple classes or grade-wide (30+ students)"
-        ],
-        "selection": "single",
-        "done": false
-      },
-      "answer": "My whole class (around 20–30 students); 22 of my 26 second graders were reading at grade level by spring"
-    },
-    {
-      "response": {
-        "intro": "Getting 22 of your 26 second graders reading at grade level by spring is clear, measurable evidence of setting a goal and guiding a whole group to hit it.",
-        "question": "You noted a Bachelor's in Elementary Education and a Utah teaching license—is your teaching license still active, or has it lapsed?",
-        "options": [
-          "Still active",
-          "Lapsed within the last 5 years",
-          "Lapsed 6–10 years ago",
-          "Lapsed more than 10 years ago",
-          "Not sure"
-        ],
-        "selection": "single",
-        "done": false
-      },
-      "answer": "Lapsed 6–10 years ago"
-    },
-    {
-      "response": {
         "intro": "Knowing your Utah teaching license lapsed 6–10 years ago is helpful—renewal can be a practical option down the road if you ever want it. Your experience is already taking shape: 3–5 years teaching 2nd grade, helping 22 of 26 students reach grade-level reading by spring, and a Bachelor's in Elementary Education. Next is Part 2, Your Life Now (about 4 minutes), which looks at what you have been doing while home—most people are surprised by how much real work shows up here.",
         "question": "Which of these have you done while you've been home? Pick everything that applies.",
         "options": [
@@ -185,54 +122,6 @@
     },
     {
       "response": {
-        "intro": "Combining people with information and numbers fits right alongside coordinating 60 PTA volunteers, 140 soccer families, and a $95,000 budget.",
-        "question": "What kind of work environment feels best to you? Pick one for social energy and one for daily structure.",
-        "options": [
-          "Busy and social",
-          "Quiet and focused",
-          "Variety",
-          "Routine"
-        ],
-        "selection": "multiple",
-        "done": false
-      },
-      "answer": "Busy and social; Variety"
-    },
-    {
-      "response": {
-        "intro": "A busy, social setting with variety fits right alongside running a classroom, coordinating 60 PTA volunteers, and keeping a 12-team soccer league moving.",
-        "question": "Before we get to hours and pay, is there anything you've always wondered if you'd be good at?",
-        "options": [
-          "Coordinating events or community programs",
-          "Training or coaching adults",
-          "Managing office operations or projects",
-          "Working with budgets or spreadsheets",
-          "Helping clients or customers solve problems",
-          "School administration or student support"
-        ],
-        "selection": "single",
-        "done": false
-      },
-      "answer": "Coordinating events or community programs; Running events for a company"
-    },
-    {
-      "response": {
-        "intro": "Running events for a company makes a lot of sense for you—between managing a $18,000 fun run with 60 volunteers and scheduling 140 soccer families, you have already handled the people, budgets, and logistics that corporate event roles rely on.",
-        "question": "About how many hours a week do you want to work?",
-        "options": [
-          "Under 15 hours",
-          "15–25 hours",
-          "25–35 hours",
-          "Full-time",
-          "Not sure"
-        ],
-        "selection": "single",
-        "done": false
-      },
-      "answer": "15–25 hours"
-    },
-    {
-      "response": {
         "intro": "15–25 hours a week lines up well with school hours and gives us a clear part-time range to aim for.",
         "question": "What does a job need to pay to make sense for your family?",
         "options": [
@@ -247,22 +136,6 @@
         "done": false
       },
       "answer": "$20–$25/hour"
-    },
-    {
-      "response": {
-        "intro": "Thanks, Melissa—having a clear pay range in mind helps us focus on roles that genuinely make sense for your family.",
-        "question": "Where do you want to work?",
-        "options": [
-          "In-person",
-          "Hybrid",
-          "Remote",
-          "Any of these",
-          "Not sure yet"
-        ],
-        "selection": "single",
-        "done": false
-      },
-      "answer": "Hybrid"
     },
     {
       "response": {

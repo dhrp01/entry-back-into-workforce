@@ -26,8 +26,7 @@ To run it again, open `http://localhost:8000/#/demo` again. It resets the interv
 
 ## How the demo moves
 
-- Melissa's answer is already selected on every question. You only click **Continue**.
-- The demo stops only on six highlights. The questions between them answer themselves in a fraction of a second.
+- The interview has 10 screens. Melissa's answer is already selected on each one. You click **Continue** to move on.
 - **Build my plan** shows the recorded plan at once.
 
 ## Timeline
@@ -35,14 +34,20 @@ To run it again, open `http://localhost:8000/#/demo` again. It resets the interv
 | Time | Screen | You click | You say |
 |---|---|---|---|
 | 0:00–0:15 | Summary | Nothing | "This is Melissa. 38, Lehi, four kids. She taught second grade, then stayed home for twelve years. Her youngest just started kindergarten. She has opened LinkedIn twice and closed it twice." |
-| 0:15–0:30 | **Stop 1:** first question | **Skills interview**, then **Start conversation** | Point at the first line: "Coming back to paid work after years at home is hard and very common, and you're in the right place." Then: "It already knows her last job from onboarding. It never asks her twice." |
-| 0:30–0:45 | **Stop 2:** activity checklist | **Continue** | "We never ask 'what are your skills?' We ask what she *did*." Point at her picks: PTA, the soccer schedule, the family budget. |
-| 0:45–0:55 | **Stop 3:** PTA follow-up | **Continue** | "Raising $18,000 with 60 volunteers. That is fundraising, event planning, and volunteer coordination." |
-| 0:55–1:15 | **Stop 4:** the payoff | **Continue** | Read it: "You translated your time at home into 8 professional skills." "This is the moment she stops saying 'I have no skills.'" |
-| 1:15–1:25 | **Stop 5:** the ranking | **Continue** | "She ranks what matters most: a flexible schedule first. Her number one never breaks." |
-| 1:25–1:35 | **Stop 6:** closing | **Continue** | "It sums up her evidence: 22 of 26 second graders reading at grade level, a $95,000 budget, a 12-team league." |
-| 1:35–1:55 | The plan | **Build my plan**, then scroll to **Pathways to explore** | "Three pathways. Each says why it fits *her*, what it takes, a first step with a Utah resource, and what it could not verify." |
+| 0:15–0:30 | 1. Activity checklist | **Skills interview**, then **Start conversation** | "It already knows her teaching background from onboarding, so it never asks twice. And we never ask 'what are your skills?' We ask what she *did*: PTA, the soccer schedule, the family budget." **Continue** |
+| 0:30–0:40 | 2. PTA follow-up | **Continue** | "PTA vice president. $18,000 raised with 60 volunteers." |
+| 0:40–0:50 | 3. Soccer schedule | **Continue** | Point at the intro: "Fundraising, volunteer coordination, event planning. Each answer becomes a professional skill." |
+| 0:50–1:00 | 4. Family budget | **Continue** | "A 12-team league for 140 families. That is logistics work." |
+| 1:00–1:05 | 5. Schedule | **Continue** | "A $95,000 budget, and the car paid off two years early." |
+| 1:05–1:10 | 6. Childcare | **Continue** | "School hours only. That is a fixed input, not a problem to argue with." |
+| 1:10–1:25 | 7. Day-to-day appeal | Pause, then **Continue** | Read the top of the intro: "You translated your time at home into 8 professional skills." "This is where she stops saying 'I have no skills.'" |
+| 1:25–1:30 | 8. Pay | **Continue** | "What a job needs to pay to make sense for her family." |
+| 1:30–1:35 | 9. Ranking | **Continue** | "She ranks what matters most: a flexible schedule first. Her number one never breaks." |
+| 1:35–1:40 | 10. Closing | **Build my plan** | "It sums up her evidence." |
+| 1:40–1:55 | The plan | Scroll to **Pathways to explore** | "Three pathways. Each says why it fits *her*, what it takes, a first step with a Utah resource, and what it could not verify." |
 | 1:55–2:00 | The plan | Nothing | "Every claim comes from her own answers. Melissa leaves with a plan, not a reading list." |
+
+Each screen's intro comments on the answer before it. So when you say a line, you talk about the screen that just appeared.
 
 ## If something goes wrong
 
@@ -54,6 +59,6 @@ To run it again, open `http://localhost:8000/#/demo` again. It resets the interv
 ## How the recording works
 
 - `demo/user.json` holds Melissa's onboarding answers and her answer bank.
-- `demo/record.py` ran the interview against real Gemini, one step at a time, and saved each response with her answer to `demo/recording.json`. Steps with `"highlight": true` are the six stops.
+- `demo/record.py` ran the interview against real Gemini, one step at a time, and saved each response with her answer to `demo/recording.json`. The recording keeps 10 of the 18 recorded screens; the cut questions are left out of the demo.
 - In demo mode, `app/interview.py` returns recorded step N when the conversation has N answers, and the recorded roadmap for the plan.
 - To record again: `python demo/record.py reset`, then `python demo/record.py answer --start` and `answer "<her answer>"` for each step, then `python demo/record.py roadmap`. It needs about 19 Gemini calls.

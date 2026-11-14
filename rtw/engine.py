@@ -141,9 +141,9 @@ def build_summary(profile):
         "worries": worries,
         "gapLine": gap_line(profile),
         "firstSteps": [
+            {"step": "chat", "text": "Talk with your coach so your roadmap fits your real life."},
             {"step": "refresher", "text": "Read what changed in your field while you were away."},
             {"step": "resume", "text": "Paste your resume and apply the top three edits."},
-            {"step": "roadmap", "text": "Tick off the first task in week one of your plan."},
         ],
     }
 

@@ -385,17 +385,31 @@
   }
 
   function viewResume() {
-    const intro = head('Resume', 'Small edits, big difference.', `Paste your resume as it is today. You will get specific changes for a ${esc(state.profile.targetRole || 'new')} role, including how to present your break.`);
-    app.innerHTML = intro + `<div class="card stack"><label for="resume-text"><strong>Your resume text</strong></label>
-      <textarea class="field" id="resume-text" style="min-height:220px;font-size:.95rem" placeholder="Paste the text of your resume here">${esc(state.resumeText)}</textarea>
-      <div class="row spread"><label class="small muted">Or load a text file <input type="file" id="resume-file" accept=".txt,.md,text/plain"></label><button class="btn" id="analyse" type="button">Review my resume</button></div>
-      <p class="small muted">${state.config.ai ? 'Your resume is sent to Claude for review and is not stored by this app.' : 'Your resume is checked on this computer by the app and is not stored.'}</p></div><div id="resume-out" style="margin-top:22px"></div>`;
-    const area = $('#resume-text'); const out = $('#resume-out');
-    area.oninput = () => { state.resumeText = area.value; store.set('resume', area.value); };
-    $('#resume-file').onchange = (e) => {
+    const intro = head('Resume', 'Small edits, big difference.', `Upload your PDF resume for specific changes for a ${esc(state.profile.targetRole || 'new')} role, including how to present your break.`);
+    const savedPdf = store.get('resumePdf', null);
+    app.innerHTML = intro + `<div class="card stack"><label for="resume-file"><strong>Resume PDF</strong> (maximum 2 MB)</label>
+      <input type="file" id="resume-file" accept=".pdf,application/pdf">
+      <p id="resume-status" class="small muted"></p>
+      <iframe id="resume-preview" title="Original resume PDF preview" style="width:100%;height:700px;border:1px solid #ccc" ${savedPdf ? '' : 'hidden'}></iframe>
+      <button class="btn" id="analyse" type="button" ${savedPdf ? '' : 'disabled'}>Review my resume</button>
+      <p class="small muted">The preview shows your original PDF formatting. Extracted text may differ and is used only for review. The PDF and text are saved in this browser. ${state.config.ai ? 'Extracted text is sent to Claude for review.' : 'Extracted text is sent to the local server for review.'}</p></div><div id="resume-out" style="margin-top:22px"></div>`;
+    const out = $('#resume-out'); const preview = $('#resume-preview'); const status = $('#resume-status');
+    if (savedPdf) { preview.src = savedPdf.data; status.textContent = savedPdf.name; }
+    $('#resume-file').onchange = async (e) => {
       const file = e.target.files[0]; if (!file) return;
-      if (file.size > 300000) { toast('That file is too large. Paste the text instead.'); return; }
-      file.text().then((t) => { area.value = t; area.oninput(); });
+      if (!file.name.toLowerCase().endsWith('.pdf') || (file.type && file.type !== 'application/pdf') || file.size > 2 * 1024 * 1024) {
+        status.textContent = 'Choose a PDF no larger than 2 MB.'; e.target.value = ''; return;
+      }
+      const button = $('#analyse'); button.disabled = true; status.textContent = 'Reading PDF…';
+      try {
+        const data = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = () => reject(new Error('Could not read the file.')); reader.readAsDataURL(file); });
+        const result = await post('/api/resume/pdf', { pdf: data.split(',')[1] });
+        state.resumeText = result.text; store.set('resume', result.text);
+        store.set('resumePdf', { name: file.name, data });
+        delete state.cache.resume; store.set('cache', state.cache); out.innerHTML = '';
+        preview.src = data; preview.hidden = false; status.textContent = file.name; button.disabled = false;
+      } catch (err) { status.textContent = err.message; button.disabled = !store.get('resumePdf', null); }
+      e.target.value = '';
     };
     const draw = (r) => {
       const order = { high: 'Do first', medium: 'Worth doing', low: 'Nice to have' };
@@ -410,10 +424,10 @@
       $$('[data-copy]', out).forEach((b) => { b.onclick = () => copy(b.dataset.copy); });
     };
     const run = async () => {
-      if (area.value.trim().length < 40) { toast('Paste your resume text first'); area.focus(); return; }
+      if (state.resumeText.trim().length < 40 || !store.get('resumePdf', null)) { toast('Upload a PDF resume first'); return; }
       const btn = $('#analyse'); btn.disabled = true;
       out.innerHTML = loading(state.config.ai ? 'Reading your resume. This can take a minute.' : 'Checking your resume');
-      try { const r = await post('/api/resume', { profile: state.profile, resume: area.value }); state.cache.resume = r; store.set('cache', state.cache); draw(r); }
+      try { const r = await post('/api/resume', { profile: state.profile, resume: state.resumeText }); state.cache.resume = r; store.set('cache', state.cache); draw(r); }
       catch (err) { out.innerHTML = failed(err); }
       btn.disabled = false;
     };

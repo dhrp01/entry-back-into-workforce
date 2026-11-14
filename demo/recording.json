@@ -26,7 +26,376 @@
         "done": false
       },
       "answer": "3–5 years"
+    },
+    {
+      "response": {
+        "intro": "Three to five years teaching second grade is solid, hands-on experience, Melissa.",
+        "question": "What is one thing you did well in that teaching role—maybe something involving people, a goal, or a number?",
+        "options": [
+          "Trained or mentored aides, volunteers, or student teachers",
+          "Hit a student growth or reading goal",
+          "Fixed a recurring classroom or communication problem",
+          "Families or parents asked to have their kids in my class",
+          "Managed a classroom budget or saved money on supplies"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "Hit a student growth or reading goal"
+    },
+    {
+      "response": {
+        "intro": "Hitting a student growth or reading goal takes real planning, tracking, and follow-through—that gives us a strong detail for your resume.",
+        "question": "Roughly how many students did that goal cover?",
+        "options": [
+          "A small group (around 5–10 students)",
+          "Most of my class (around 15–20 students)",
+          "My whole class (around 20–30 students)",
+          "Multiple classes or grade-wide (30+ students)"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "My whole class (around 20–30 students); 22 of my 26 second graders were reading at grade level by spring"
+    },
+    {
+      "response": {
+        "intro": "Getting 22 of your 26 second graders reading at grade level by spring is clear, measurable evidence of setting a goal and guiding a whole group to hit it.",
+        "question": "You noted a Bachelor's in Elementary Education and a Utah teaching license—is your teaching license still active, or has it lapsed?",
+        "options": [
+          "Still active",
+          "Lapsed within the last 5 years",
+          "Lapsed 6–10 years ago",
+          "Lapsed more than 10 years ago",
+          "Not sure"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "Lapsed 6–10 years ago"
+    },
+    {
+      "response": {
+        "intro": "Knowing your Utah teaching license lapsed 6–10 years ago is helpful—renewal can be a practical option down the road if you ever want it. Your experience is already taking shape: 3–5 years teaching 2nd grade, helping 22 of 26 students reach grade-level reading by spring, and a Bachelor's in Elementary Education. Next is Part 2, Your Life Now (about 4 minutes), which looks at what you have been doing while home—most people are surprised by how much real work shows up here.",
+        "question": "Which of these have you done while you've been home? Pick everything that applies.",
+        "options": [
+          "Managed the family budget",
+          "PTA/PTO officer, room parent, or school fundraising",
+          "Organized schedules or carpools for kids' activities",
+          "Coordinated care for an aging parent or family member",
+          "Taught a class, led a youth group, or had a church teaching role",
+          "Ran a side business (Etsy, babysitting, direct sales, crafts)",
+          "Planned a big event (reunion, wedding, large fundraiser)",
+          "Managed a home renovation or a major move",
+          "See more activities"
+        ],
+        "selection": "multiple",
+        "done": false
+      },
+      "answer": "PTA/PTO officer, room parent, or school fundraising; Organized schedules or carpools for kids' activities; Managed the family budget"
+    },
+    {
+      "response": {
+        "intro": "Those three picks already point to real workplace skills: budget management and financial planning from running the family budget, logistics and scheduling from managing kids' activities, and event planning, stakeholder communication, and volunteer coordination from your school work. Adding a rough detail or number to each will turn them into concrete resume evidence.",
+        "question": "Starting with your PTA/PTO or school work, what role did you hold and roughly how many volunteers or dollars were involved?",
+        "options": [
+          "PTA or PTO officer (such as president, VP, treasurer, or secretary)",
+          "Room parent coordinating a class and a small group of helpers",
+          "Event or committee chair working with 10 or more volunteers",
+          "Fundraising lead raising $1,000 or more"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "PTA or PTO officer (such as president, VP, treasurer, or secretary); PTA vice president for two years; our fall fun run raised about $18,000 with 60 volunteers"
+    },
+    {
+      "response": {
+        "intro": "Serving as PTA vice president for two years—and raising $18,000 with 60 volunteers—shows event planning, fundraising, volunteer coordination, and stakeholder communication. That puts 4 professional skills on your list already, the exact coordination work schools and nonprofits hire for.",
+        "question": "Next, for the schedules and carpools you organized, roughly how many people or activities were you juggling in a typical week?",
+        "options": [
+          "2–3 people and 3–5 weekly activities",
+          "3–4 people and 6–10 weekly activities",
+          "5 or more people and 10+ weekly activities",
+          "Mostly occasional trips rather than a weekly schedule"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "5 or more people and 10+ weekly activities; I ran the neighborhood youth soccer league schedule: 12 teams and about 140 families each season"
+    },
+    {
+      "response": {
+        "intro": "Coordinating a soccer league schedule for 12 teams and 140 families is real logistics coordination, scheduling, and multi-priority management—the exact work operations coordinators are paid to do. Combined with the stakeholder communication, event planning, fundraising, and volunteer coordination from your PTA role, you already have 7 professional skills.",
+        "question": "Last one from your list: for managing the family budget, roughly how much did it cover per year, and did it help you reach a goal like paying something off?",
+        "options": [
+          "Under $30,000 a year",
+          "$30,000–$60,000 a year",
+          "$60,000–$100,000 a year",
+          "Over $100,000 a year",
+          "Not sure of the exact total"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "$60,000–$100,000 a year; About $95,000 a year in a spreadsheet; we paid off our car two years early"
+    },
+    {
+      "response": {
+        "intro": "Managing a $95,000 annual budget in a spreadsheet and paying off a car two years early is real budget management and financial planning—the same kind of resource allocation an office manager or operations coordinator handles every day. With your activities mapped out, let's look at how work fits into your life.",
+        "question": "What kind of work schedule fits best for you right now?",
+        "options": [
+          "School hours only",
+          "Flexible",
+          "Evenings or weekends",
+          "Any schedule"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "School hours only"
+    },
+    {
+      "response": {
+        "intro": "Got it, Melissa—sticking to school hours gives us a clear boundary to filter for.",
+        "question": "Is childcare sorted, or is it still part of the puzzle?",
+        "options": [
+          "Sorted",
+          "Part of the puzzle"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "Part of the puzzle"
+    },
+    {
+      "response": {
+        "intro": "Got it, Melissa — we'll factor childcare into your plan and look at options like Utah Child Care Assistance when we put your next steps together. That wraps up Part 2, and look at what you just built: you translated your time at home into 8 professional skills — fundraising and volunteer coordination (from raising $18,000 with 60 volunteers as PTA vice president), event planning and stakeholder communication (from your two years as a PTA officer), logistics coordination and scheduling (from running the 12-team, 140-family youth soccer league schedule alongside weekly family logistics), and budget management and financial planning (from managing a $95,000 annual budget and paying off your car two years early). Now for the last part — about 5 minutes on what you'd enjoy and what a job needs to look like for you.",
+        "question": "Which of these sounds most appealing day-to-day? Pick one or two.",
+        "options": [
+          "Working with people",
+          "Information and numbers",
+          "Hands-on things",
+          "Ideas and creativity"
+        ],
+        "selection": "multiple",
+        "done": false
+      },
+      "answer": "Working with people; Information and numbers"
+    },
+    {
+      "response": {
+        "intro": "Combining people with information and numbers fits right alongside coordinating 60 PTA volunteers, 140 soccer families, and a $95,000 budget.",
+        "question": "What kind of work environment feels best to you? Pick one for social energy and one for daily structure.",
+        "options": [
+          "Busy and social",
+          "Quiet and focused",
+          "Variety",
+          "Routine"
+        ],
+        "selection": "multiple",
+        "done": false
+      },
+      "answer": "Busy and social; Variety"
+    },
+    {
+      "response": {
+        "intro": "A busy, social setting with variety fits right alongside running a classroom, coordinating 60 PTA volunteers, and keeping a 12-team soccer league moving.",
+        "question": "Before we get to hours and pay, is there anything you've always wondered if you'd be good at?",
+        "options": [
+          "Coordinating events or community programs",
+          "Training or coaching adults",
+          "Managing office operations or projects",
+          "Working with budgets or spreadsheets",
+          "Helping clients or customers solve problems",
+          "School administration or student support"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "Coordinating events or community programs; Running events for a company"
+    },
+    {
+      "response": {
+        "intro": "Running events for a company makes a lot of sense for you—between managing a $18,000 fun run with 60 volunteers and scheduling 140 soccer families, you have already handled the people, budgets, and logistics that corporate event roles rely on.",
+        "question": "About how many hours a week do you want to work?",
+        "options": [
+          "Under 15 hours",
+          "15–25 hours",
+          "25–35 hours",
+          "Full-time",
+          "Not sure"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "15–25 hours"
+    },
+    {
+      "response": {
+        "intro": "15–25 hours a week lines up well with school hours and gives us a clear part-time range to aim for.",
+        "question": "What does a job need to pay to make sense for your family?",
+        "options": [
+          "Under $15/hour",
+          "$15–$20/hour",
+          "$20–$25/hour",
+          "$25–$35/hour",
+          "$35+/hour",
+          "Not sure"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "$20–$25/hour"
+    },
+    {
+      "response": {
+        "intro": "Thanks, Melissa—having a clear pay range in mind helps us focus on roles that genuinely make sense for your family.",
+        "question": "Where do you want to work?",
+        "options": [
+          "In-person",
+          "Hybrid",
+          "Remote",
+          "Any of these",
+          "Not sure yet"
+        ],
+        "selection": "single",
+        "done": false
+      },
+      "answer": "Hybrid"
+    },
+    {
+      "response": {
+        "intro": "Hybrid is a helpful middle ground—it gives you the in-person connection you want while keeping part of your week closer to home as you figure out childcare.",
+        "question": "Last question: which of these matter most to you right now? Rank your top three, with the most important first.",
+        "options": [
+          "Pay",
+          "Hours",
+          "In-person, hybrid, or remote",
+          "A flexible schedule",
+          "Getting back to work fastest",
+          "Room to grow"
+        ],
+        "selection": "ranked",
+        "done": false
+      },
+      "answer": "A flexible schedule > Getting back to work fastest > Pay"
+    },
+    {
+      "response": {
+        "intro": "Putting a flexible schedule first, followed by getting back to work quickly and pay, gives us a clear filter for your next step—especially alongside school-hour availability, 15 to 25 hours a week, and a hybrid setup. Look at the evidence you have built here, Melissa: you helped 22 of 26 second graders reach grade-level reading, raised $18,000 with 60 volunteers as PTA vice president, scheduled 12 youth soccer teams for 140 families, and managed a $95,000 annual budget that paid off your car two years early. You have real fundraising, logistics, budgeting, and people experience to pair with your education background and interest in event coordination, and we will also include childcare support options as we look at what fits.",
+        "question": "Ready to build your skill profile and career plan?",
+        "options": [],
+        "selection": "single",
+        "done": true
+      },
+      "answer": null
     }
   ],
-  "roadmap": null
+  "roadmap": {
+    "summary": "Melissa, you bring 3 to 5 years of elementary teaching paired with 12 years of running complex community operations and family finances. Leading 22 of 26 second graders to grade-level reading, raising $18,000 with 60 PTA volunteers, scheduling 140 families across 12 soccer teams, and paying off a car two years early on a $95,000 budget are skills employers pay for every day. Your path back by January 2027 starts from real evidence, not from scratch.",
+    "strengths": [
+      {
+        "name": "Instruction and Measurable Outcomes",
+        "assessment": "Employers in schools, training, and program roles value someone who can guide a group toward a clear benchmark and track who needs extra support.",
+        "evidence": "Taught 2nd grade for 3 to 5 years and brought 22 of 26 students to grade-level reading by spring."
+      },
+      {
+        "name": "Fundraising and Volunteer Coordination",
+        "assessment": "Coordinating dozens of unpaid volunteers to hit a dollar goal translates directly to program management, nonprofit administration, and office operations.",
+        "evidence": "Served two years as PTA vice president and led a fall fun run that raised about $18,000 with 60 volunteers."
+      },
+      {
+        "name": "Multi-Group Scheduling and Logistics",
+        "assessment": "Building conflict-free calendars for large groups is core operations work for school offices, program coordinators, and event teams.",
+        "evidence": "Managed the neighborhood youth soccer league schedule for 12 teams and roughly 140 families each season while coordinating 10+ weekly activities for 5 or more people."
+      },
+      {
+        "name": "Budgeting and Financial Tracking",
+        "assessment": "Tracking cash flow in spreadsheets and sticking to a multi-year payoff plan shows the financial discipline employers look for in administrative and coordinator roles.",
+        "evidence": "Managed an annual household budget of about $95,000 in a spreadsheet and paid off the family car two years early."
+      },
+      {
+        "name": "Community and Family Communication",
+        "assessment": "Keeping parents, volunteers, and families informed without dropping details builds the stakeholder trust needed in people-facing roles.",
+        "evidence": "Communicated regularly with parents as a 2nd-grade teacher, 60 PTA volunteers, and 140 soccer league families."
+      }
+    ],
+    "pathways": [
+      {
+        "name": "Substitute teacher / paraeducator",
+        "why_it_fits": "This matches your #1 priority of a flexible schedule and #2 priority of getting back to work fastest, while building directly on your Bachelor's in Elementary Education and 3 to 5 years of 2nd-grade classroom success.",
+        "what_it_needs": "Light local school district onboarding and background checks; you do not need to renew your lapsed Utah teaching license first to substitute or work as a paraeducator.",
+        "how_it_fits_life": "Fits school hours and 15 to 25 hours a week closely, and substitute roles let you pick which days you work. The main trade-off is that school roles are on-site rather than hybrid.",
+        "first_step": "Contact your local school district HR page and book a free coaching session through Utah Dept. of Workforce Services (DWS) at jobs.utah.gov to compare district pay rates and paraeducator openings.",
+        "reality_check": "Standard occupation from the pathway table, but I could not check current Utah postings or district substitute requirements without live web search. I do not have a verified Utah hourly pay figure to confirm whether local districts meet $20 to $25/hour; DWS career coaches can confirm current postings and pay."
+      },
+      {
+        "name": "Project or program coordinator",
+        "why_it_fits": "Combines both of your day-to-day interests—working with people and working with information and numbers—in a varied, social role that uses your $18,000 PTA fundraiser, 140-family soccer schedule, and $95,000 budget tracking.",
+        "what_it_needs": "No new degree required, though refreshing current cloud office tools and optionally exploring a beginner project certificate such as CAPM can help bridge your 12-year gap.",
+        "how_it_fits_life": "Hybrid schedules are common in coordinator roles, making it the strongest match for your hybrid preference. Part-time school-hours openings (15 to 25 hours) exist in nonprofits, education organizations, and local businesses, though they take more targeted searching than full-time roles.",
+        "first_step": "Visit Return Utah at returnutah.utah.gov to check upcoming cohort dates and free resume, LinkedIn, and interview workshops, and ask a DWS coach at jobs.utah.gov to help target part-time hybrid coordinator postings.",
+        "reality_check": "Standard occupation from the pathway table, but I could not check current Utah postings without live web search, and part-time hybrid coordinator roles are rarer than full-time ones. I do not have a verified Utah pay figure for part-time roles; DWS career coaches can confirm current local openings and wages."
+      },
+      {
+        "name": "Event coordinator (wildcard)",
+        "why_it_fits": "Directly tests your curiosity about coordinating events or community programs and running events for a company, backed by your 60-volunteer, $18,000 fall fun run and 12-team soccer league scheduling.",
+        "what_it_needs": "No formal credential is usually required; a short portfolio summary of the PTA fun run and league logistics plus updated spreadsheet and scheduling software skills is enough to start.",
+        "how_it_fits_life": "Fits your love of variety and busy, social environments, and some corporate or nonprofit coordinators work hybrid. However, event roles frequently require irregular, evening, or weekend hours that conflict with school-hours availability unless you focus on daytime school, nonprofit, or internal company events.",
+        "first_step": "Use a DWS career coach at jobs.utah.gov to identify Utah nonprofits, universities, or school foundations that hire daytime part-time event or community coordinators.",
+        "reality_check": "Included as your wildcard option from the pathway table, with a clear constraint gap: irregular event hours often clash with school-hours scheduling and unresolved childcare. I could not check current Utah postings or verify hourly pay without web search; DWS career coaches can confirm what is hiring locally."
+      }
+    ],
+    "growth_areas": [
+      {
+        "name": "Current Workplace Software and Digital Tools",
+        "assessment": "Refreshing modern shared calendars, cloud documents, and collaboration tools makes a 12-year career break feel recent to hiring managers in hybrid or coordinator roles.",
+        "evidence": "Stepped away from paid teaching in August 2014 (12 years ago), so workplace software and digital collaboration norms have shifted since your last paid role."
+      },
+      {
+        "name": "Teaching License Renewal Options (If Returning to Licensed Teaching)",
+        "assessment": "If you ever decide to move from substituting or coordinating back into a licensed classroom role, checking Utah renewal coursework rules early keeps that door open.",
+        "evidence": "Your Utah teaching license lapsed 6 to 10 years ago."
+      },
+      {
+        "name": "Childcare Coverage and Backup Plan",
+        "assessment": "Having reliable coverage for early-release days, sick days, and any hybrid work blocks protects your #1 priority of a workable schedule before January 2027.",
+        "evidence": "You noted that childcare is still part of the puzzle alongside wanting school-hours work."
+      }
+    ],
+    "unknowns": [
+      "Specific childcare gaps—such as kids' ages, school bell times, or backup care needed for sick days and school breaks.",
+      "Whether you are open to fully on-site school roles (like substitute teaching or paraeducator work) if part-time hybrid roles paying $20 to $25/hour are limited.",
+      "Your specific Utah city or school district, which determines local substitute pay, district onboarding steps, and commute range for hybrid roles.",
+      "Whether you want to pursue renewing your lapsed Utah teaching license down the road or focus purely on non-licensed roles.",
+      "Verified current Utah hourly wages and live part-time openings across these pathways, which could not be checked without live web search."
+    ],
+    "steps": [
+      {
+        "title": "Confirm Utah pay and local part-time openings",
+        "action": "Schedule a free one-on-one session with a career coach to check current Utah hourly wages for substitute teachers, paraeducators, and part-time hybrid project coordinators against your $20 to $25/hour target.",
+        "resource_guidance": "Utah Dept. of Workforce Services (DWS) at jobs.utah.gov — free one-on-one career coaching and local job market guidance.",
+        "timeframe": "This week"
+      },
+      {
+        "title": "Sort out the childcare puzzle before January",
+        "action": "Map out coverage for school-hours shifts, sick days, and breaks, and check whether your family qualifies for sliding-scale support if you add training or part-time work hours.",
+        "resource_guidance": "Care About Childcare at careaboutchildcare.utah.gov to search providers, and Utah Child Care Assistance at jobs.utah.gov/occ or mycase.utah.gov to check subsidy eligibility (check the site for current eligibility details).",
+        "timeframe": "Weeks 1 to 2"
+      },
+      {
+        "title": "Refresh workplace tools and draft a chronological resume",
+        "action": "Take short refresher modules on modern office and collaboration tools, then build a chronological resume with a Family Household Manager entry and a separate PTA Vice President entry above your 2nd-grade teaching role.",
+        "resource_guidance": "Local library systems (your county library) for free LinkedIn Learning access and resume help, plus DWS at jobs.utah.gov for resume feedback and possible training funding.",
+        "timeframe": "Weeks 2 to 4"
+      },
+      {
+        "title": "Check returnship cohorts and school district timelines",
+        "action": "Review upcoming workshop and cohort dates for structured returner support, and check your local school district's substitute or paraeducator application window so you are cleared to start by January 2027.",
+        "resource_guidance": "Return Utah at returnutah.utah.gov — check the site for current cohort dates, eligibility, and free resume, LinkedIn, and interview workshops.",
+        "timeframe": "Weeks 3 to 6"
+      }
+    ]
+  }
 }

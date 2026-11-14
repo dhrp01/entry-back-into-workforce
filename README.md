@@ -1,45 +1,62 @@
-# Return to Work
+# Re-Entry: A Guided Pathway Back Into the Workforce
 
-Built for the AI Collective Hackathon.
+**AI Collective Hackathon**
 
-A web app that helps someone return to work after a career break:
-a motivating questionnaire, then a summary, a week-by-week roadmap with
-training, a refresher on what changed in their field, matched courses,
-resume edits, and live job postings with a way to find each company's recruiters.
+A nonprofit app that helps caregivers — especially stay-at-home parents — return to work after a long career break. Users don't just get information; they leave with **actual direction**: a personalized re-entry plan, a resume that handles the gap, a skill-building path, and real connections to community resources and jobs.
 
-## Run it
+> **Fun. Highly useful. Relentlessly encouraging. Built for people with 10 spare minutes at a time.**
 
-    python3 server.py
+---
 
-Then open http://localhost:8000. Python 3.9 or later, no installs needed.
+## The Problem
 
-## What is live and what is built in
+Millions of caregivers want to return to work but face compounding barriers:
 
-| Step | Without any keys | With keys |
-|---|---|---|
-| Questionnaire, summary, roadmap, courses | Built in | Same |
-| What changed | Curated starter digest per field (`rtw/data.py`) | Live digest from Claude with web search and source links |
-| Resume | Rule-based check: gap, summary, keywords, dated wording, numbers | Review by Claude with line-by-line rewrites |
-| Jobs | Live from Remotive, Arbeitnow and Remote OK (mostly remote and European roles) | Adds Adzuna for local listings by country |
+- **Confidence** — imposter syndrome, lost professional identity, underselling caregiving as skilled work
+- **The resume gap** — hiring bias and ATS screening filter out nonlinear histories
+- **Outdated skills & shrunken networks** — unsure what transfers, nobody to call
+- **Practical walls** — childcare costs, schedule inflexibility, benefits cliffs
+- **No roadmap** — existing resources are scattered articles, not a guided path
 
-To turn on the keyed features, copy `.env.example` to `.env`, fill it in, and for
-Claude also run `pip3 install -r requirements.txt`.
+Nothing walks a returner from *"who am I now?"* to *"here is my plan."* This app does.
 
-## Layout
+## How It Works — The 6-Stage Journey
 
-    server.py        HTTP server and JSON API (standard library)
-    rtw/data.py      Editable content: fields, skills, refresher items, courses
-    rtw/engine.py    Summary, roadmap, course matching, resume rules
-    rtw/jobs.py      Job sources, ranking, recruiter search links
-    rtw/ai.py        Optional Claude layer; falls back to engine.py on any failure
-    static/          The single-page front end (plain HTML, CSS and JavaScript)
+| Stage | What happens |
+|---|---|
+| 1. **Discover** | Skills & aptitude assessment — including skills built *during* the gap |
+| 2. **Choose** | Compare 2–3 suggested career pathways with honest fit reasoning |
+| 3. **Build** | Gap-closing skill plan: free/low-cost courses and certifications |
+| 4. **Package** | Resume + gap-story builder that survives ATS screening |
+| 5. **Connect** | Community resources, mentors, peer cohorts, returner-friendly job board |
+| 6. **Launch** | Exit deliverable: a personalized 30/60/90-day re-entry action plan |
 
-## Notes
+The whole app is designed **backward from the exit deliverable**. Direction, not information.
 
-- No account and no database. Answers, plan progress and resume text are kept in
-  the visitor's browser (localStorage) and sent to the server only to compute results.
-- Job sources are public APIs that permit this use. LinkedIn and Indeed are not
-  scraped because their terms prohibit it. The recruiter button opens a LinkedIn
-  people search in the visitor's own account.
-- Job results are cached on the server for an hour per source.
-- Resume upload accepts pasted text or a .txt file. PDF and Word parsing is not built yet.
+## What Makes It Different
+
+- **Caregiving counts as experience.** The assessment translates budgeting, logistics, advocacy, and crisis management into professional skills.
+- **Warm handoffs, not link lists.** Every resource connection answers *"what's my next single step?"*
+- **Built for real life.** Every module is completable in 10-minute bites — nap-time and pickup-line friendly.
+- **Encouragement is a feature.** Celebration mechanics, rejection-recovery support, and a tone that works whether someone is returning by choice or by necessity.
+
+## Repo Contents
+
+| File | Description |
+|---|---|
+| [`WORKFLOW.md`](WORKFLOW.md) | Full product workflow: user journey, feature detail per stage, design requirements, MVP vs. later phases, success metrics |
+| [`ICP_PERSONA.md`](ICP_PERSONA.md) | Who we're building for: ideal customer profile, the "Melissa" persona, secondary segments, and anti-ICP |
+| [`INTAKE_DESIGN.md`](INTAKE_DESIGN.md) | Build spec for the intake/assessment: UX principles, 11-question script, activity→skill mapping table, resume generation logic |
+| [`UTAH_RESOURCES.md`](UTAH_RESOURCES.md) | Vetted Utah community resources to integrate — returnships, workforce services, childcare assistance, 211 — with a 3-tier integration plan |
+
+## MVP Scope (Hackathon)
+
+Discover assessment → pathway suggestions → resume & gap-story builder → curated resource directory → personalized exit action plan.
+
+## Success Metrics
+
+- % of users completing an exit action plan
+- Resumes completed / gap stories practiced
+- Resource connections made (and warm handoffs completed)
+- Self-reported confidence lift (pre/post)
+- Interviews and jobs landed at 30/60/90 days

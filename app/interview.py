@@ -1,5 +1,6 @@
 """Stateless, profile-aware interview and planning endpoints driven by skills/SKILL.md."""
 import json
+import logging
 import os
 import re
 from datetime import date
@@ -13,6 +14,7 @@ from starlette.concurrency import run_in_threadpool
 
 router = APIRouter(prefix='/interview')
 SKILLS = Path(__file__).resolve().parent.parent / 'skills' / 'SKILL.md'
+RECORDING = Path(__file__).resolve().parent.parent / 'demo' / 'recording.json'
 MAX_TURNS = 60
 
 # Each step gets only the references the skill's routing table calls for.
@@ -24,6 +26,8 @@ How this app works:
 - Greet her and name the hard part only in the first message, when the conversation is empty. Later messages go straight to a brief, specific affirmation of her last answer.
 - The app shows one question at a time. Put a short affirmation, reflection, or end-of-part summary in `intro`, and only the question itself in `question`.
 - Put the answer choices in `options` as plain text, without numbers, and do not repeat them in `question`. The app always adds a box for her own answer and a Skip button, so leave out "something else" and "skip" options.
+- Every message must carry a real intake question. Do not ask "keep going or come back later?" or ask her to react to a bullet; the app lets her stop at any time. Put each end-of-part summary or payoff in the `intro` of the next part's first question.
+- Ask both environment picks (busy or quiet, variety or routine) as one question with `selection` "multiple".
 - Set `selection` to "multiple" for pick-all-that-apply questions (such as the activity checklist or "pick one or two"), "ranked" for the top-3 ranking, and "single" otherwise.
 - Her answers arrive as the option text she chose: several picks are joined with "; ", and a ranking is in order, joined with " > ".
 - When the intake is complete (after the ranking question), set `done` to true. Put the closing message in `intro` and one short line inviting her to build her plan in `question`, with no options.
@@ -64,6 +68,10 @@ class Question(BaseModel):
     options: list[str] = []
     selection: Literal['single', 'multiple', 'ranked'] = 'single'
     done: bool = False
+
+
+class QuestionReply(Question):
+    demo_answer: str = ''
 
 
 class SkillFinding(BaseModel):
@@ -209,16 +217,46 @@ def generate(request: InterviewRequest, schema, task: str, references=()):
     except HTTPException:
         raise
     except Exception:
+        logging.getLogger(__name__).exception('Gemini request failed')
         raise HTTPException(502, 'Could not generate a response. Please try again.') from None
 
 
-@router.post('/question', response_model=Question)
+def demo_recording() -> dict | None:
+    """In demo mode, the recorded interview from demo/record.py; otherwise None."""
+    if os.getenv('INTERVIEW_DEMO') != '1':
+        return None
+    if not RECORDING.exists():
+        raise HTTPException(503, 'Demo mode is on, but demo/recording.json does not exist. Run demo/record.py first.')
+    return json.loads(RECORDING.read_text(encoding='utf-8'))
+
+
+@router.post('/demo')
+async def demo_profile():
+    recording = demo_recording()
+    if recording is None:
+        raise HTTPException(404, 'Demo mode is off. Start the API with INTERVIEW_DEMO=1.')
+    return {'profile': recording['profile']}
+
+
+@router.post('/question', response_model=QuestionReply)
 async def next_question(request: InterviewRequest):
     if len(request.turns) >= MAX_TURNS:
         raise HTTPException(422, 'Interview limit reached; please generate your roadmap.')
+    recording = demo_recording()
+    if recording is not None:
+        steps = recording['steps']
+        if len(request.turns) >= len(steps):
+            raise HTTPException(409, 'The demo recording has no more questions. Build the plan now.')
+        step = steps[len(request.turns)]
+        return QuestionReply(**step['response'], demo_answer=step['answer'] or '')
     return await run_in_threadpool(generate, request, Question, QUESTION_TASK, QUESTION_REFERENCES)
 
 
 @router.post('/roadmap', response_model=Roadmap)
 async def roadmap(request: InterviewRequest):
+    recording = demo_recording()
+    if recording is not None:
+        if not recording.get('roadmap'):
+            raise HTTPException(409, 'The demo recording has no roadmap yet. Run demo/record.py roadmap.')
+        return recording['roadmap']
     return await run_in_threadpool(generate, request, Roadmap, ROADMAP_TASK, ROADMAP_REFERENCES)

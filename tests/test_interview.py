@@ -1,3 +1,4 @@
+import json
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -115,3 +116,32 @@ def test_empty_onboarding_answers_are_treated_as_unanswered():
 def test_interview_allows_a_long_intake():
     turns = [{'question': f'Q{i}', 'answer': 'A'} for i in range(45)]
     assert len(InterviewRequest(turns=turns).turns) == 45
+
+
+def test_demo_mode_replays_the_recording_without_gemini(monkeypatch, tmp_path):
+    recording = tmp_path / 'recording.json'
+    recording.write_text(json.dumps({
+        'profile': {'name': 'Melissa'},
+        'steps': [
+            {'response': {'intro': 'Hi.', 'question': 'How long?', 'options': ['3–5 years'], 'selection': 'single', 'done': False}, 'answer': '3–5 years'},
+            {'response': {'intro': '', 'question': 'Ready?', 'options': [], 'selection': 'single', 'done': True}, 'answer': None},
+        ],
+        'roadmap': {'summary': 'Recorded plan', 'strengths': [], 'pathways': [], 'growth_areas': [], 'unknowns': [], 'steps': []},
+    }), encoding='utf-8')
+    monkeypatch.setattr('app.interview.RECORDING', recording)
+    monkeypatch.setenv('INTERVIEW_DEMO', '1')
+    monkeypatch.delenv('GEMINI_API_KEY', raising=False)
+    turn = {'question': 'How long?', 'answer': '3–5 years'}
+    with TestClient(app) as client:
+        assert client.post('/interview/demo', json={}).json() == {'profile': {'name': 'Melissa'}}
+        first = client.post('/interview/question', json={}).json()
+        assert first['question'] == 'How long?' and first['demo_answer'] == '3–5 years'
+        assert client.post('/interview/question', json={'turns': [turn]}).json()['done'] is True
+        assert client.post('/interview/question', json={'turns': [turn, turn]}).status_code == 409
+        assert client.post('/interview/roadmap', json={}).json()['summary'] == 'Recorded plan'
+
+
+def test_demo_endpoint_is_off_by_default(monkeypatch):
+    monkeypatch.delenv('INTERVIEW_DEMO', raising=False)
+    with TestClient(app) as client:
+        assert client.post('/interview/demo', json={}).status_code == 404

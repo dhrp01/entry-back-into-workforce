@@ -284,6 +284,20 @@
         if (answer) submit(answer); else $('#interview-status').textContent = q.options.length ? 'Pick an option, type an answer, or skip this question.' : 'Enter an answer or skip this question.';
       };
       if ($('#skip-question')) $('#skip-question').onclick = () => submit('Skipped');
+      if (q && q.demo_answer && !q.done) {
+        // Demo mode: pre-select the recorded answer so the presenter only clicks Continue.
+        const extra = [];
+        q.demo_answer.split(/ > |; /).forEach((part) => {
+          const i = q.options.indexOf(part);
+          if (i >= 0 && !picked.includes(i)) picked.push(i); else if (i < 0) extra.push(part);
+        });
+        $$('[data-pick]').forEach((x) => {
+          const n = picked.indexOf(+x.dataset.pick);
+          x.setAttribute('aria-pressed', String(n >= 0));
+          if (q.selection === 'ranked') x.querySelector('.mark').textContent = n >= 0 ? String(n + 1) : '';
+        });
+        $('#interview-answer').value = extra.join('; ');
+      }
       if ($('#build-plan')) $('#build-plan').onclick = finish;
       if ($('#finish-interview')) $('#finish-interview').onclick = finish;
     };
@@ -619,6 +633,16 @@
   const VIEWS = { interview: viewInterview, "interview-roadmap": viewInterviewRoadmap, chat: viewChat, summary: viewSummary, roadmap: viewRoadmap, refresher: viewRefresher, courses: viewCourses, resume: viewResume, jobs: viewJobs };
   async function route() {
     let key = (location.hash.replace(/^#\/?/, '') || '').split('?')[0];
+    if (key === 'demo') {
+      // Demo mode: load the recorded user's onboarding answers and start a fresh interview.
+      try {
+        const demo = await post('/api/interview/demo', {});
+        Object.assign(state, { profile: demo.profile, done: true, step: 0, cache: {}, interview: { turns: [], question: '', roadmap: null }, plan: null });
+        ['profile', 'done', 'step', 'cache', 'interview', 'plan'].forEach((k) => store.set(k, state[k]));
+        location.hash = '#/summary';
+      } catch (err) { app.innerHTML = failed(err); }
+      return;
+    }
     // New and returning unfinished visitors go straight to their saved question.
     if (!state.done && key !== 'quiz') {
       key = 'quiz';

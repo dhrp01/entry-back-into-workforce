@@ -56,6 +56,8 @@
     jobs: null,
     remoteOnly: false,
     interview: store.get('interview', { turns: [], question: '', roadmap: null }),
+    chat: store.get('chat', null),      // { messages: [{role, text}], previousId, greeting, suggestions, ready }
+    plan: store.get('plan', null),      // the roadmap: { mode, understood, decisions, weeks, ... }
   };
   // The questionnaire gained new questions; restart its position for existing
   // profiles so an old saved step cannot skip them. Keep all saved answers.
@@ -102,7 +104,10 @@
   };
 
   function cheer() {
-    return { title: 'That is everything we need.', body: '<p>You have just done the hardest part, which is starting. Your summary and plan are ready.</p>', final: true };
+    // One onboarding section, so one closing card: it hands over to the conversation.
+    const p = state.profile;
+    const role = p.lastRole ? `Your time as ${/^[aeiou]/i.test(p.lastRole) ? 'an' : 'a'} <strong>${esc(p.lastRole)}</strong> does not expire. ` : '';
+    return { title: 'That is your starting point.', body: `<p>${role}You have just done the hardest part, which is starting.</p><p>Next is a short conversation with your coach, in your own words, so your roadmap fits your real life and not just a form.</p>`, final: true };
   }
 
   // ------------------------------------------------------------- the quiz ---
@@ -127,7 +132,7 @@
     if (cur.kind === 'cheer') {
       const ch = cheer(cur.section);
       body = `<div class="cheer"><div class="card stack"><p class="eyebrow">Section ${cur.section + 1} of ${SECTIONS.length} complete</p><h1>${esc(ch.title)}</h1>${ch.body}</div>
-        <div class="quiz-actions"><button class="btn ghost" id="back" type="button">Back</button><button class="btn" id="next" type="button">${ch.final ? 'See my summary' : 'Continue'}</button></div></div>`;
+        <div class="quiz-actions"><button class="btn ghost" id="back" type="button">Back</button><button class="btn" id="next" type="button">${ch.final ? 'Meet my coach' : 'Continue'}</button></div></div>`;
     } else {
       const q = cur.q; const v = state.profile[q.id];
       let input = '';
@@ -196,11 +201,13 @@
     state.jobs = null;
     state.interview = { turns: [], question: '', roadmap: null };
     store.set('interview', state.interview);
+    state.plan = null; store.set('plan', null);
+    state.chat = null; store.set('chat', null);
     location.hash = '#/interview';
   }
 
   // ---------------------------------------------------------------- views ---
-  const STEPS = [['interview', 'Conversation'], ['summary', 'Summary'], ['roadmap', 'Roadmap'], ['refresher', 'What changed'], ['courses', 'Courses'], ['resume', 'Resume'], ['jobs', 'Jobs']];
+  const STEPS = [['interview', 'Skills interview'], ['chat', 'Coach chat'], ['summary', 'Summary'], ['roadmap', 'Roadmap'], ['refresher', 'What changed'], ['courses', 'Courses'], ['resume', 'Resume'], ['jobs', 'Jobs']];
   const head = (eyebrow, title, lede) => `<div class="head"><p class="eyebrow">${esc(eyebrow)}</p><h1>${esc(title)}</h1><p class="lede">${lede}</p></div>`;
   const loading = (text) => `<div class="loading"><span class="spinner"></span><span>${esc(text)}</span></div>`;
   const failed = (err) => `<div class="note warm"><strong>That did not load.</strong> ${esc(err.message || err)} <button class="link" type="button" onclick="location.reload()">Try again</button></div>`;
@@ -214,11 +221,12 @@
       <p class="lede">Answer a few questions and get a personal plan: what changed while you were away, what to learn, how to fix your resume, and live jobs worth applying to.</p>
       <div class="row" style="margin-top:28px">
         <a class="btn" href="#/quiz">${state.done ? 'Edit my answers' : resume ? 'Continue where I left off' : 'Start: it takes 5 minutes'}</a>
-        ${state.done ? '<a class="btn ghost" href="#/summary">Go to my summary</a>' : ''}
+        ${state.done ? `<a class="btn ghost" href="#/${state.plan ? 'roadmap' : 'chat'}">${state.plan ? 'Go to my roadmap' : 'Continue to the conversation'}</a>` : ''}
       </div>
       <ol class="steps-preview">
         <li><strong>A short questionnaire</strong><span class="muted small">About your strengths first, gaps second.</span></li>
-        <li><strong>Your roadmap</strong><span class="muted small">A week-by-week plan with training built in.</span></li>
+        <li><strong>A conversation</strong><span class="muted small">A coach asks what a form cannot, in your own words.</span></li>
+        <li><strong>Your roadmap</strong><span class="muted small">A week-by-week plan built from what the coach understood.</span></li>
         <li><strong>What changed</strong><span class="muted small">A refresher on your field since you left.</span></li>
         <li><strong>Courses</strong><span class="muted small">Matched to your role, time and budget.</span></li>
         <li><strong>Resume edits</strong><span class="muted small">Specific changes, including how to present the gap.</span></li>
@@ -248,7 +256,7 @@
       $('#finish-interview').onclick = async () => {
         $('#interview-status').textContent = 'Building your roadmap…';
         $$('button', app).forEach((b) => { b.disabled = true; });
-        try { data.roadmap = await post('/api/interview/roadmap', payload()); save(); location.hash = '#/roadmap'; }
+        try { data.roadmap = await post('/api/interview/roadmap', payload()); save(); location.hash = '#/interview-roadmap'; }
         catch (err) { $('#interview-status').textContent = err.message; $$('button', app).forEach((b) => { b.disabled = false; }); }
       };
     };
@@ -258,22 +266,22 @@
   async function viewSummary() {
     app.innerHTML = loading('Putting your summary together');
     const s = await cached('summary', '/api/summary', { profile: state.profile });
-    const labels = { 'full-time': 'Full-time', 'part-time': 'Part-time', phased: 'Phased start', unsure: 'Flexible on hours', remote: 'From home', hybrid: 'Hybrid', onsite: 'On site', any: 'Any location' };
-    const pri = { flexibility: 'Flexibility', pay: 'Pay', growth: 'Learning and growth', purpose: 'Meaningful work', stability: 'Stability', team: 'A supportive team' };
-    const t = s.target;
+    // Shows only what the onboarding questionnaire asks: name, last role, field,
+    // skills and tools, when they stepped away, where to improve, start date, education.
+    const p = state.profile;
+    const field = (state.config.fields.find((f) => f.key === p.field) || {}).label;
+    const start = monthLabel(p.startDate);
     app.innerHTML = head('Your summary', s.headline.charAt(0).toUpperCase() + s.headline.slice(1), esc(s.awayNote)) + `
       <div class="grid two">
-        <div class="card stack"><h2>Your strengths</h2>
-          <div class="chips">${s.strengths.map((x) => `<span class="chip${x.from === 'break' ? ' gold' : ''}">${esc(x.text)}</span>`).join('') || '<span class="muted">Add a few in the questionnaire and they will appear here.</span>'}</div>
-          ${s.strengths.some((x) => x.from === 'break') ? '<p class="small muted">Highlighted strengths come from your time away. They belong on your resume too.</p>' : ''}</div>
-        <div class="card stack"><h2>Your target</h2><p style="font-size:1.25rem;font-weight:600">${esc(t.role)}</p>
-          <div class="chips">${[labels[t.schedule], labels[t.workStyle], t.location].filter(Boolean).map((x) => `<span class="chip plain">${esc(x)}</span>`).join('')}</div>
-          ${t.priorities.length ? `<p class="small muted">What matters most: ${t.priorities.map((k) => esc(pri[k] || k)).join(', ')}.</p>` : ''}</div>
-        <div class="card stack"><h2>Your starting line</h2>
-          <div><div class="meter" aria-label="Readiness ${s.confidence} out of 10">${Array.from({ length: 10 }, (_, i) => `<i class="${i < s.confidence ? 'on' : ''}"></i>`).join('')}</div><p class="small muted">${s.confidence} out of 10 today</p></div>
-          <p>${esc(s.confidenceNote)}</p>
-          <p class="small muted">You have about ${s.prepHours} hours of preparation over ${s.weeks} weeks.</p></div>
-        <div class="card stack"><h2>What is on your mind</h2>${s.worries.map((w) => `<div class="worry"><strong>${esc(w.label)}</strong><p class="muted">${esc(w.reply)} <a href="#/${esc(w.step)}">Go there</a></p></div>`).join('') || '<p class="muted">Nothing flagged. If something comes up, each step has help built in.</p>'}</div>
+        <div class="card stack"><h2>Your skills and tools</h2>
+          <div class="chips">${s.strengths.filter((x) => x.from !== 'break').map((x) => `<span class="chip">${esc(x.text)}</span>`).join('') || '<span class="muted">Add a few in the questionnaire and they will appear here.</span>'}</div></div>
+        <div class="card stack"><h2>Where you are heading</h2><p style="font-size:1.25rem;font-weight:600">${esc(p.lastRole || 'Your next role')}</p>
+          <div class="chips">${[field, start ? `Back at work by ${start}` : ''].filter(Boolean).map((x) => `<span class="chip plain">${esc(x)}</span>`).join('')}</div>
+          <p class="small muted">${s.weeks} weeks to prepare. Your roadmap is paced to this.</p></div>
+        <div class="card stack"><h2>Where you want to grow</h2><p>${esc(p.improvement || 'Not answered yet.')}</p>
+          <p class="small muted">Your roadmap and courses focus on this first.</p></div>
+        <div class="card stack"><h2>Your education</h2><p>${esc(p.education || 'Not answered yet.')}</p>
+          <p class="small muted">It goes on your resume as it is. Lapsed certificates still count.</p></div>
       </div>
       <div class="card stack" style="margin-top:16px"><div class="row spread"><h2>Your gap, in one sentence</h2><button class="btn ghost small" id="copy-gap" type="button">Copy</button></div>
         <p class="quote">${esc(s.gapLine)}</p><p class="small muted">Use this on your resume and LinkedIn, and as the start of your answer in interviews.</p></div>
@@ -283,7 +291,7 @@
     $('#copy-gap').onclick = () => copy(s.gapLine);
   }
 
-  async function viewRoadmap() {
+  async function viewInterviewRoadmap() {
     const plan = state.interview.roadmap;
     if (plan) {
       const findings = (items) => items.map((x) => `<li><strong>${esc(x.name)}</strong>: ${esc(x.assessment)} <span class="muted">Evidence: ${esc(x.evidence)}</span></li>`).join('');
@@ -293,14 +301,32 @@
         '<p class="small muted">AI-generated guidance is informational; verify resources and requirements before acting.</p><a href="#/interview">Continue the conversation</a>';
       return;
     }
-    app.innerHTML = head('Your roadmap', 'One week at a time.', 'Three small tasks a week: one to learn, one for your career, one for your confidence.') + loading('Building your plan');
-    const r = await cached('roadmap', '/api/roadmap', { profile: state.profile });
+    location.hash = '#/interview';
+  }
+
+  async function viewRoadmap() {
+    const title = head('Your roadmap', 'One week at a time.', 'Three small tasks a week: one to learn, one for your career, one for your confidence.');
+    if (!state.plan) {
+      app.innerHTML = title + loading(state.chat && state.chat.messages.length > 1 && state.config.coach.enabled ? 'Building your roadmap from your answers and your conversation. This can take a minute.' : 'Building your roadmap');
+      await buildPlan();
+    }
+    const r = state.plan;
+    const list = (items) => `<ul class="plain-list">${items.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
     const draw = () => {
-      const total = r.weeks.length * 3;
+      const total = r.weeks.reduce((n, w) => n + w.tasks.length, 0);
       const done = r.weeks.reduce((n, w) => n + w.tasks.filter((_, i) => state.ticks[`${w.week}-${i}`]).length, 0);
       const current = r.weeks.find((w) => w.tasks.some((_, i) => !state.ticks[`${w.week}-${i}`]));
-      let html = head('Your roadmap', 'One week at a time.', `${r.totalWeeks} weeks at about ${r.hoursPerWeek} hours a week. Three small tasks each week: one to learn, one for your career, one for your confidence.`) +
-        `<div class="card"><div class="row spread"><strong>${done === 0 ? 'Tick your first task to get going' : done === total ? 'Plan complete. You are ready.' : `${done} of ${total} tasks done`}</strong><span class="muted small">${current ? `You are on week ${current.week}` : ''}</span></div><div class="bar" style="margin-top:12px"><i style="width:${Math.round((done / total) * 100)}%"></i></div></div>`;
+      const talked = state.chat && state.chat.messages.length > 1;
+      let html = head('Your roadmap', 'One week at a time.', `${r.totalWeeks} weeks at about ${r.hoursPerWeek} hours a week. Three small tasks each week: one to learn, one for your career, one for your confidence.`);
+      if (r.mode === 'live') {
+        html += `<div class="card stack" style="margin-bottom:16px"><div class="row spread"><span class="chip">Built from your conversation</span><button class="btn ghost small" id="rebuild" type="button">Rebuild my roadmap</button></div>
+          <div class="grid two"><div><h3>What your coach understood</h3>${list(r.understood)}</div><div><h3>How that shaped your plan</h3>${list(r.decisions)}</div></div>
+          <p class="small muted">Not quite right? <a href="#/chat">Tell your coach</a>, then rebuild.</p></div>`;
+      } else {
+        html += `<div class="note" style="margin-bottom:16px"><div class="row spread"><span><strong>This is the standard plan from your questionnaire.</strong> ${esc(r.note || '')}</span>
+          <span class="row">${talked ? '' : '<a class="btn ghost small" href="#/chat">Have the conversation</a>'}<button class="btn ghost small" id="rebuild" type="button">Rebuild</button></span></div></div>`;
+      }
+      html += `<div class="card"><div class="row spread"><strong>${done === 0 ? 'Tick your first task to get going' : done === total ? 'Plan complete. You are ready.' : `${done} of ${total} tasks done`}</strong><span class="muted small">${current ? `You are on week ${current.week}` : ''}</span></div><div class="bar" style="margin-top:12px"><i style="width:${Math.round((done / total) * 100)}%"></i></div></div>`;
       let phase = '';
       r.weeks.forEach((w) => {
         if (w.phase !== phase) { html += `${phase ? '</section>' : ''}<section class="phase"><h2>${esc(w.phase)}</h2><p class="muted">${esc(w.phaseNote)}</p>`; phase = w.phase; }
@@ -312,7 +338,12 @@
             return `<label class="task${on ? ' checked' : ''}"><input type="checkbox" data-tick="${id}"${on ? ' checked' : ''}><span><span class="task-kind">${esc(t.kind)}</span><span class="task-text">${esc(t.text)}</span>${link}</span><span class="muted small">${t.hours} h</span></label>`;
           }).join('') + '</div>';
       });
-      app.innerHTML = html + '</section>' + nextStep('refresher', 'What changed');
+      app.innerHTML = html + '</section>' + nextStep('summary', 'Your summary');
+      $('#rebuild').onclick = async () => {
+        if (done && !confirm('Rebuilding replaces this plan and clears the tasks you have ticked. Continue?')) return;
+        state.plan = null; store.set('plan', null);
+        try { await viewRoadmap(); } catch (err) { app.innerHTML = failed(err); }
+      };
       $$('[data-tick]').forEach((box) => {
         box.onchange = () => {
           state.ticks[box.dataset.tick] = box.checked; store.set('ticks', state.ticks);
@@ -422,6 +453,7 @@
         <div class="row" style="margin-top:14px"><a class="btn small" href="${safeUrl(x.url)}" target="_blank" rel="noopener noreferrer">View and apply</a>
           ${x.recruiterUrl ? `<a class="btn ghost small" href="${safeUrl(x.recruiterUrl)}" target="_blank" rel="noopener noreferrer">Find recruiters on LinkedIn</a><button class="btn ghost small" data-msg="${i}" type="button">Copy a message to send</button>` : ''}
           <span class="muted small" style="margin-left:auto">${x.posted ? `Posted ${esc(x.posted)} · ` : ''}via ${esc(x.source)}</span></div></div>`).join('');
+      html += nextStep('chat', 'Talk it through with your coach');
       html += '<p class="small muted" style="margin-top:18px">The LinkedIn button opens a people search for recruiters at that company in your own LinkedIn account. Match scores are a guide based on your answers, not a prediction.</p>';
       app.innerHTML = html;
       $('#find').onclick = fetchJobs;
@@ -436,8 +468,126 @@
     draw();
   }
 
+  // --------------------------------------------------------- conversation ---
+  // Step two of the journey. Before a plan exists the agent interviews the
+  // person; the plan is then built from the questionnaire and this
+  // conversation; afterwards the same chat coaches from the plan.
+  // (The interview comes from Michelle's Streamlit prototype.)
+  const richText = (t) => esc(t).replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+  function coachPayload(message) {
+    const r = state.cache.resume;
+    return {
+      profile: state.profile, ticks: state.ticks, message,
+      hasPlan: !!state.plan, weeks: state.plan ? state.plan.weeks : null, understood: state.plan ? state.plan.understood : null,
+      previousId: state.chat && state.chat.previousId, greeting: state.chat && state.chat.greeting,
+      resume: r ? { score: r.score, edits: r.edits.slice(0, 6).map((e) => e.title) } : null,
+      jobs: state.jobs ? state.jobs.jobs.slice(0, 6).map((j) => ({ title: j.title, company: j.company, match: j.match })) : null,
+    };
+  }
+
+  // Ask the server for the roadmap. With Gemini on and a conversation to read,
+  // it is written from what the agent understood; otherwise it is the standard plan.
+  async function buildPlan() {
+    const transcript = state.chat ? state.chat.messages.map((m) => ({ role: m.role, text: m.text })) : [];
+    const plan = await post('/api/plan', { profile: state.profile, transcript });
+    state.plan = plan; store.set('plan', plan);
+    state.ticks = {}; store.set('ticks', {});      // a new plan has new tasks
+    return plan;
+  }
+
+  async function viewChat() {
+    const status = state.config.coach || { enabled: false, reason: 'The conversation is not available.' };
+    const intro = state.plan
+      ? head('Conversation', 'Talk it through.', 'Your coach knows your answers, your plan and where you are in it. Ask what to do next, practise your gap answer, or run a mock interview.')
+      : head('Step 2 of 3 · Conversation', 'Now, in your own words.', 'A short conversation, about five questions, so your roadmap fits your real life and not just a form. Your coach will say when it has enough.');
+    if (!state.chat) {
+      app.innerHTML = intro + loading('Getting your coach ready');
+      const start = await post('/api/coach/start', coachPayload(''));
+      state.chat = { messages: [{ role: 'coach', text: start.greeting }], previousId: null, greeting: start.greeting, suggestions: start.suggestions, ready: false };
+      store.set('chat', state.chat);
+    }
+    const chat = state.chat;
+    let busy = false;
+    app.innerHTML = intro + `${status.enabled ? '' : `<div class="note warm" style="margin-bottom:16px"><strong>The conversation is not switched on yet.</strong> ${esc(status.reason)} You can still build the standard roadmap from your questionnaire answers.</div>`}
+      <div class="card chat"><div class="chat-log" id="chat-log" aria-live="polite"></div>
+        <div class="chips suggest" id="chat-suggest"></div>
+        <form class="chat-form" id="chat-form"><textarea class="field" id="chat-input" rows="1" maxlength="4000" placeholder="Type your answer" aria-label="Message to your coach"${status.enabled ? '' : ' disabled'}></textarea>
+          <button class="btn" id="chat-send" type="submit"${status.enabled ? '' : ' disabled'}>Send</button></form></div>
+      <div class="build" id="build-bar"></div>
+      <p class="small muted" style="margin-top:12px">Your messages, answers and plan are sent to Google Gemini to produce replies. <button class="link" id="chat-new" type="button">Start the conversation again</button></p>`;
+    const log = $('#chat-log'); const input = $('#chat-input'); const sendBtn = $('#chat-send');
+    const bubble = (m) => `<div class="msg ${m.role}"><span class="who">${m.role === 'coach' ? 'Coach' : 'You'}</span><div class="bubble">${richText(m.text)}</div></div>`;
+    const build = async () => {
+      app.innerHTML = intro + loading(status.enabled && chat.messages.length > 1 ? 'Building your roadmap from your answers and this conversation. This can take a minute.' : 'Building your roadmap');
+      try { await buildPlan(); location.hash = '#/roadmap'; }
+      catch (err) { app.innerHTML = intro + failed(err); }
+    };
+    const draw = () => {
+      log.innerHTML = chat.messages.map(bubble).join('');
+      log.scrollTop = log.scrollHeight;
+      const fresh = chat.messages.length === 1 && status.enabled;
+      $('#chat-suggest').innerHTML = fresh ? chat.suggestions.map((s) => `<button type="button" data-say="${esc(s)}">${esc(s)}</button>`).join('') : '';
+      $$('[data-say]').forEach((b) => { b.onclick = () => send(b.dataset.say); });
+      const bar = $('#build-bar'); const answers = chat.messages.filter((m) => m.role === 'you').length;
+      if (state.plan) bar.innerHTML = '<span class="muted small">Your roadmap is built. If something changes, rebuild it from the Roadmap screen.</span><a class="btn ghost small" href="#/roadmap">Open my roadmap</a>';
+      else if (!status.enabled) bar.innerHTML = '<span class="muted small">Step 3 of 3</span><button class="btn" id="build" type="button">Build my roadmap</button>';
+      else if (chat.ready) bar.innerHTML = '<span><strong>Your coach has what it needs.</strong> <span class="muted small">Step 3 of 3</span></span><button class="btn" id="build" type="button">Build my roadmap</button>';
+      else bar.innerHTML = `<span class="muted small">${answers ? `${answers} answer${answers === 1 ? '' : 's'} so far. Your coach will say when it has enough.` : 'Answer in as much detail as you like.'}</span><button class="btn ghost small" id="build" type="button">${answers ? 'Build my roadmap now' : 'Skip and build my roadmap'}</button>`;
+      if ($('#build')) $('#build').onclick = build;
+    };
+
+    async function send(text) {
+      text = String(text || '').trim();
+      if (!text || busy || !status.enabled) return;
+      busy = true; sendBtn.disabled = true; input.value = '';
+      chat.messages.push({ role: 'you', text });
+      const reply = { role: 'coach', text: '' };
+      chat.messages.push(reply); draw();
+      const target = log.lastElementChild.querySelector('.bubble');
+      target.innerHTML = '<span class="typing">Thinking</span>';
+      try {
+        const res = await fetch('/api/coach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(coachPayload(text)) });
+        if (!res.ok || !res.body) { const data = await res.json().catch(() => ({})); throw new Error(data.error || 'The coach could not reply just now.'); }
+        const reader = res.body.getReader(); const decoder = new TextDecoder(); let buffer = '';
+        const handle = (line) => {
+          if (!line.trim()) return;
+          const event = JSON.parse(line);
+          if (event.id) chat.previousId = event.id;
+          if (event.text) { reply.text += event.text; target.innerHTML = richText(reply.text); log.scrollTop = log.scrollHeight; }
+          if (event.ready) chat.ready = true;          // the agent decided it knows enough
+          if (event.error) throw new Error(event.error);
+        };
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n'); buffer = lines.pop();
+          lines.forEach(handle);
+        }
+        handle(buffer);
+        reply.text = reply.text.trim();
+        if (!reply.text) throw new Error('The coach sent an empty reply. Please try again.');
+      } catch (err) {
+        toast(err.message || 'The coach could not reply just now.');
+        if (!reply.text) {
+          // Nothing arrived: drop both bubbles and hand the message back so it is not lost.
+          chat.messages.splice(-2, 2);
+          input.value = text;
+        }
+      }
+      store.set('chat', chat);
+      busy = false; sendBtn.disabled = false; draw(); input.focus();
+    }
+
+    $('#chat-form').onsubmit = (e) => { e.preventDefault(); send(input.value); };
+    input.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input.value); } };
+    $('#chat-new').onclick = () => { state.chat = null; store.set('chat', null); viewChat().catch((err) => { app.innerHTML = failed(err); }); };
+    draw();
+    if (status.enabled) input.focus();
+  }
+
   // --------------------------------------------------------------- router ---
-  const VIEWS = { interview: viewInterview, summary: viewSummary, roadmap: viewRoadmap, refresher: viewRefresher, courses: viewCourses, resume: viewResume, jobs: viewJobs };
+  const VIEWS = { interview: viewInterview, "interview-roadmap": viewInterviewRoadmap, chat: viewChat, summary: viewSummary, roadmap: viewRoadmap, refresher: viewRefresher, courses: viewCourses, resume: viewResume, jobs: viewJobs };
   async function route() {
     let key = (location.hash.replace(/^#\/?/, '') || '').split('?')[0];
     // New and returning unfinished visitors go straight to their saved question.
@@ -459,7 +609,7 @@
   $('#reset').onclick = () => {
     if (!confirm('This clears your answers, plan progress and resume from this browser. Continue?')) return;
     store.clear();
-    Object.assign(state, { profile: {}, done: false, step: 0, cache: {}, ticks: {}, resumeText: '', jobs: null, interview: { turns: [], question: '', roadmap: null } });
+    Object.assign(state, { profile: {}, done: false, step: 0, cache: {}, ticks: {}, resumeText: '', jobs: null, interview: { turns: [], question: '', roadmap: null }, chat: null, plan: null });
     location.hash = '#/'; route();
   };
 

@@ -4,12 +4,25 @@ Algorithm mechanics, profile optimization, and content strategy backed by eye-tr
 
 ## Required Inputs
 
-Before optimizing a LinkedIn profile, collect:
-- Current headline and About text (if any)
-- Target role and industry
-- Key achievements (from interviewer mode or user profile)
-- Content comfort level (lurker, occasional poster, active creator)
-- Whether they have LinkedIn Premium or Creator Mode
+Take these from the intake; ask only for what is missing:
+- Whether she has a LinkedIn profile, and its current headline and About text
+- Chosen pathway (target role and field)
+- Last paid role (Q1), credentials (Q3), and the skills and numbers from her time at home (Q5)
+- How comfortable she is with LinkedIn (many returners have opened it and closed it again)
+---
+
+## For Returning Moms
+
+LinkedIn often feels intimidating to her. Aim for a **simple, complete profile**, not a content strategy.
+
+1. **Photo:** a clear, friendly photo; a phone photo against a plain wall is fine.
+2. **Headline:** target role + her strongest background + one specific. Example: "Instructional Designer | Former Elementary Teacher | Curriculum and Volunteer Training." Leave out "returning to work" and "seeking opportunities."
+3. **About (first ~275 characters):** what she does, what she brings, what she's looking for — in her voice. One line on the break is fine; no apology.
+4. **Career break:** add it as a career break entry in Experience (LinkedIn has a dedicated career break type), with 2–3 bullets from `activity-skills.md`.
+5. **Volunteer roles:** PTA, league coordinator, church teaching roles go in Experience or Volunteer with titles and numbers.
+6. **Reconnect first:** suggest she connect with 10 former colleagues and friends before any other networking. Use the reconnect template in `outreach.md`.
+
+Posting content is optional. Don't push it. The Content Strategy section applies only if she wants it.
 
 ---
 

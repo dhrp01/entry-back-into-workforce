@@ -4,13 +4,11 @@ Connection request data, cold message strategy, and organic networking framework
 
 ## Required Inputs
 
-Before generating outreach messages, collect:
-- Who they're reaching out to (recruiter, hiring manager, peer, executive)
-- How they found this person (LinkedIn, event, referral, cold)
-- What they want (informational interview, referral, job lead, mentorship)
-- Any shared context (same school, same company, mutual connection, their content)
-- Target role and industry
-
+Before writing a message, collect:
+- Who she is reaching out to — former colleague, someone from her community (school, church, neighborhood), a returnship program, or someone she doesn't know
+- What she wants — catch up, advice about a field, an introduction, or a job lead
+- Shared context — same old workplace, same school or kids' activities, mutual friend
+- Her chosen pathway
 ---
 
 ## Connection Request Data
@@ -55,6 +53,24 @@ These words cut acceptance rates in half. Never use them in connection requests.
 - "leverage"
 
 The first three are measured; the rest are conventional wisdom. All six signal that you want something from them, not that you have something in common with them.
+
+---
+
+## Returner Templates
+
+Most of her network is warm, not cold. Start here. Under 80 words, her voice, no apology for the time away.
+
+### Reconnecting with a former colleague
+> Hi [Name]! It's been a while — I hope [something specific: the school, the team] is going well. I've been home with my kids for the last [years] and I'm starting to look at going back, probably toward [field]. Would you be up for a quick coffee or call? I'd love to hear what's changed.
+
+### Someone from her community who works in her target field
+> Hi [Name], [mutual context: our kids are on the same team / we met at the PTA fair]. I heard you work in [field] at [Company]. I'm getting ready to go back to work and [field] is high on my list. Could I ask you a few questions sometime — 15 minutes, whenever works for you?
+
+### A returnship or returner program
+> Hello — I'm a [former role] who has been home with my kids for [years], and I'm interested in [program]. Could you tell me when the next cohort opens and whether my background in [area] is a good fit?
+
+### After any conversation
+> Thanks so much for talking with me. Your point about [specific thing] really helped — I've already [action she took]. I'll let you know how it goes.
 
 ---
 

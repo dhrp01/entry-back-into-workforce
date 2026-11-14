@@ -8,7 +8,9 @@ Load this file when the user asks about:
 - **Specific company research**: culture, recent news, team structure, hiring patterns for a named employer
 - **Uncovered industries**: sectors not represented in the knowledge base (e.g., mining, agriculture, maritime)
 - **Niche salary data**: compensation for roles, locations, or seniority levels not in market-data.md
-- **Non-US markets**: hiring norms, labor laws, or platform usage outside the United States
+- **Returner-friendliness of an employer**: returnships, part-time or school-hours roles, remote options, parental-leave and flexibility policies
+- **Utah figures**: pay, training cost, or training time for a pathway (see `pathways.md`)
+- **Programs not in `utah-resources.md`**: local training, childcare, or returner programs she asks about
 
 If the request can be fully answered from the existing knowledge base, do not activate this protocol — use the verified data instead.
 
@@ -24,6 +26,8 @@ Never search for broad topics. Construct narrow, specific queries.
 - **Right**: "senior backend engineer salary Berlin 2025 Glassdoor OR Levels.fyi"
 - **Wrong**: "company culture"
 - **Right**: "[Company Name] engineering team Glassdoor reviews 2024 2025"
+- **Right**: "medical assistant median wage Utah site:jobs.utah.gov OR site:bls.gov"
+- **Right**: "[Company Name] returnship OR \"return to work\" program Utah"
 
 Use at least two different queries per topic to reduce single-source risk.
 

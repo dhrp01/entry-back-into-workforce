@@ -7,8 +7,8 @@ AI tell removal adapted for career materials. This file defines what makes writi
 Before running a quality check, have the draft text ready and know:
 - What type of document it is (resume, cover letter, LinkedIn, message)
 - Who the audience is (recruiter, hiring manager, connection)
-- Whether the user is an ESL speaker (affects formality calibration)
-
+- Her own words from the intake — the check compares the draft against how she actually talks
+- Whether she is an ESL speaker (affects formality calibration)
 ---
 
 ## Why This Matters
@@ -66,6 +66,13 @@ These phrases appear in the majority of AI-generated career materials [T2, 30+ h
 - "I help [audience] achieve [outcome] through [method]"
 - "Thought leader in [industry]"
 - "Driving innovation and transformation"
+
+### Caregiving Clichés
+- "CEO of the Household," "Domestic Engineer," "Chief Family Officer" — joke titles read as unserious
+- "Wore many hats," "juggled it all," "the hardest job in the world"
+- Apology openers: "Although I've been out of the workforce…," "Despite my time away…"
+- "Took time off to focus on family" with nothing after it — always follow with what she did
+- **Inflating home tasks into corporate jargon.** "Directed logistics operations for a six-person organization" for a carpool drops trust. Name the real thing plainly, with a number: "Scheduled activities and carpools for four kids across three schools."
 
 ### Structural Tells
 - Uniformly polished bullets with identical length

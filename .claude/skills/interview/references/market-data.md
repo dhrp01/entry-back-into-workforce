@@ -4,11 +4,17 @@ Verified labor market data for calibrating job search expectations and salary re
 
 ## Required Inputs
 
-Before using this data, collect from the user:
-- Target industry and role
-- Geographic location (for salary and remote work context)
-- Seniority level
-- Whether they're open to relocation or remote
+Take these from the intake; ask only for what is missing:
+- Chosen pathway (target role and field)
+- Location — most users are on Utah's Wasatch Front
+- Hours and remote preference (Q6)
+---
+
+## For Returning Moms
+
+- **This data is national.** For Utah pay, cost, and training figures, follow the sourcing rule in `pathways.md` — search and cite, or say there is no verified number.
+- **Use numbers to calibrate, not to scare.** Don't open with search-duration or rejection statistics. Use them when she asks, or to explain why a plan has the shape it does.
+- **Gap data lives in `resume.md` and `cover-letter.md`.** The main message: an explained gap does much better than an unexplained one.
 
 ---
 
@@ -147,6 +153,8 @@ These numbers exist to calibrate the interviewer mode, not to discourage users.
 | 6.4 million wanted work but ceased active searching | T1 |
 
 If a user shows signs of burnout or desperation, shift to MI techniques before producing documents. Emotional stabilization comes before resume optimization.
+
+For a returner, the common dips are "who would hire me?" before she starts and discouragement after early rejections. Reflect the feeling, point to evidence from her own answers, and make the next step smaller. For a necessity returner under money pressure, add the matching help from `utah-resources.md` (DWS, 211) early.
 
 ---
 

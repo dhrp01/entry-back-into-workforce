@@ -4,14 +4,23 @@ Long-term career planning frameworks, cross-industry mobility data, and coaching
 
 ## Required Inputs
 
-Before advising on career strategy, collect:
-- Current role, industry, and tenure
-- Target direction (specific role, industry change, seniority jump, or "I don't know")
-- What's driving the change (dissatisfaction, layoff, growth ceiling, curiosity)
-- Financial constraints (can they take a pay cut for a transition? How long?)
-- Skills they have vs skills they think they need
-
+Take these from the intake; ask only for what is missing:
+- Last paid role, field, and length (Q1) and credentials, including lapsed ones (Q3)
+- Skills found from her time at home (Q5)
+- What work must look like: hours, schedule, location, start date (Q6)
+- Pay need, if she gave one (Q7)
+- Interests and what matters most now (Q8–Q10)
+- Whether this is a necessity return (urgent income need)
 ---
+
+## For Returning Moms
+
+- **Pathway choice uses `pathways.md`.** This file adds longer-term thinking on top of it.
+- **"Go back" vs. "go somewhere new."** Many returners don't want their old job ("I don't want to teach again, but it's all I've done"). Treat the old career as a source of skills, not a track she must return to. Show one pathway that uses it directly and one that moves sideways.
+- **Lapsed credentials are shortcuts.** Renewing a license or certificate is often the fastest path back to her old pay level. Name it even if she plans to move on later.
+- **The childcare math has a long view.** When she says "by the time I pay for childcare, what's the point?", don't argue. Point out that the short-term math leaves out raises, retirement savings, and Social Security credits, and that childcare costs drop as kids enter school. Give no dollar figures without a source (see `pathways.md`).
+- **Plan the home side too.** Returners often quit because the household didn't change. Before her start date, suggest a short who-does-what conversation at home: school pickup, sick days, meals, and backup care. Offer to help her write the list.
+- **Identity matters as much as income.** Her goal is to feel competent and current again. Small early wins (one course finished, one coffee with a former colleague) count as progress; name them.
 
 ## Career Coaching Effectiveness (T1 — RCT Evidence)
 

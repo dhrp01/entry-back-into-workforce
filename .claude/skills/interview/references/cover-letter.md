@@ -4,13 +4,12 @@ Field-experiment-backed cover letter guidance. The data here comes from controll
 
 ## Required Inputs
 
-Before generating a cover letter, collect:
-- Target company and role (trigger research pre-flight if web search available)
-- Job description text
-- Which of the user's achievements are most relevant to this role
-- Whether the user has a career gap to address
-- Any specific connection to the company (used their product, know someone, attended an event)
-
+Take these from the intake and the conversation; ask only for what is missing:
+- Target company and role (trigger research pre-flight if web search is available)
+- Job description text — ask her to paste it
+- Her most relevant achievements, from her last job (Q2) and her time at home (Q5)
+- Years away (Q4) and what she did during them
+- Any connection to the company (used their product, knows someone, saw them at a school or community event)
 ---
 
 ## The Signal Problem
@@ -47,9 +46,17 @@ This is the strongest finding from the research — field experiment data with d
 
 ### Strategy
 1. **Always explain gaps.** An unexplained gap is the most damaging signal (-15% callback). Explaining reduces the penalty by roughly half.
-2. **Frame with a credible, specific reason.** "Family caregiving while completing a data analytics certificate" is better than "personal reasons."
+2. **Frame with a credible, specific reason.** "I spent eight years at home raising four kids, where I also ran our school's PTA fundraising" is better than "personal reasons."
 3. **Address in the cover letter, not just the resume.** The cover letter is where you control the narrative before the recruiter forms assumptions.
 4. **Don't over-explain.** One sentence. Move on to what you bring to the role.
+
+---
+
+### For Returning Moms
+- **One or two sentences on the break, in paragraph 2 or 3** — never the opening line. Say it plainly, then name what she did during it, with a number from her intake.
+- **No apology and no private details.** She never explains a divorce, a death, a diagnosis, or money.
+- **Returnships and returner programs:** say it openly in the first paragraph. They are built for her.
+- Use the same framing as her gap story (`interview.md`) and her resume career-break entry (`activity-skills.md`) so all three match.
 
 ---
 

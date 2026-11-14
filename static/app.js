@@ -204,7 +204,18 @@
   }
 
   // ---------------------------------------------------------------- views ---
-  const STEPS = [['interview', 'Skills interview'], ['chat', 'Coach chat'], ['summary', 'Summary'], ['roadmap', 'Roadmap'], ['refresher', 'What changed'], ['courses', 'Courses'], ['resume', 'Resume'], ['jobs', 'Jobs']];
+  const STEPS = [['summary', 'About you'], ['interview', 'Skills interview'], ['interview-roadmap', 'Your plan']];
+  const DEMO = window.DEMO;
+  const isDemo = () => !!(DEMO && store.get('demo', false));
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  // Skills the scripted interview has revealed after `n` answers.
+  const demoSkills = (n) => DEMO.interview.slice(0, n).flatMap((s) => s.skills);
+  function loadDemo() {
+    store.clear();
+    Object.assign(state, { profile: { ...DEMO.profile }, done: true, step: 0, cache: {}, ticks: {}, resumeText: '', jobs: null, interview: { turns: [], question: '', roadmap: null }, chat: null, plan: null });
+    saveProfile(); store.set('done', true); store.set('demo', true); store.set('quizVersion', 2); store.set('interview', state.interview);
+    location.hash = '#/summary';
+  }
   const head = (eyebrow, title, lede) => `<div class="head"><p class="eyebrow">${esc(eyebrow)}</p><h1>${esc(title)}</h1><p class="lede">${lede}</p></div>`;
   const loading = (text) => `<div class="loading"><span class="spinner"></span><span>${esc(text)}</span></div>`;
   const failed = (err) => `<div class="note warm"><strong>That did not load.</strong> ${esc(err.message || err)} <button class="link" type="button" onclick="location.reload()">Try again</button></div>`;
@@ -213,21 +224,17 @@
   function viewWelcome() {
     const resume = !state.done && Object.keys(state.profile).length > 0;
     app.innerHTML = `<section class="hero">
-      <p class="eyebrow">For anyone returning after a career break</p>
-      <h1>Going back to work starts with <em>what you already have.</em></h1>
-      <p class="lede">Answer a few questions and get a personal plan: what changed while you were away, what to learn, how to fix your resume, and live jobs worth applying to.</p>
+      <p class="eyebrow">For moms returning to work after years at home</p>
+      <h1>Everything she has, <em>finally in motion.</em></h1>
+      <p class="lede">Your years at home are not a gap. They are experience. MOMentum turns what you did into professional skills, real pathways, and a first step you can take today.</p>
       <div class="row" style="margin-top:28px">
         <a class="btn" href="#/quiz">${state.done ? 'Edit my answers' : resume ? 'Continue where I left off' : 'Start: it takes 5 minutes'}</a>
-        ${state.done ? `<a class="btn ghost" href="#/${state.plan ? 'roadmap' : 'chat'}">${state.plan ? 'Go to my roadmap' : 'Continue to the conversation'}</a>` : ''}
+        ${state.done ? '<a class="btn ghost" href="#/interview">Continue to the conversation</a>' : DEMO ? '<a class="btn ghost" href="#/demo">See Melissa’s story</a>' : ''}
       </div>
       <ol class="steps-preview">
-        <li><strong>A short questionnaire</strong><span class="muted small">About your strengths first, gaps second.</span></li>
-        <li><strong>A conversation</strong><span class="muted small">A coach asks what a form cannot, in your own words.</span></li>
-        <li><strong>Your roadmap</strong><span class="muted small">A week-by-week plan built from what the coach understood.</span></li>
-        <li><strong>What changed</strong><span class="muted small">A refresher on your field since you left.</span></li>
-        <li><strong>Courses</strong><span class="muted small">Matched to your role, time and budget.</span></li>
-        <li><strong>Resume edits</strong><span class="muted small">Specific changes, including how to present the gap.</span></li>
-        <li><strong>Live jobs and recruiters</strong><span class="muted small">Current postings ranked for you, with who to contact.</span></li>
+        <li><strong>Tell us what you did</strong><span class="muted small">Not “list your skills”. PTA, carpools, the family budget.</span></li>
+        <li><strong>Watch your skills appear</strong><span class="muted small">Each answer becomes a professional skill, with proof.</span></li>
+        <li><strong>Leave with a plan</strong><span class="muted small">Pathways that fit your life, and your next single step.</span></li>
       </ol></section>`;
   }
 
@@ -244,22 +251,28 @@
       const current = !q ? `<button class="btn" id="start-interview" type="button">${data.turns.length ? 'Continue conversation' : 'Start conversation'}</button>`
         : q.done ? `<div class="card stack">${q.intro ? `<p class="lede" style="white-space:pre-line">${esc(q.intro)}</p>` : ''}<h2>${esc(q.question)}</h2><div class="row"><button class="btn" id="build-plan" type="button">Build my plan</button></div></div>`
         : `<div class="card stack">${q.intro ? `<p class="lede" style="white-space:pre-line">${esc(q.intro)}</p>` : ''}<h2>${esc(q.question)}</h2>${hint}${options}
-          <label for="interview-answer">${q.options.length ? 'Or type your own answer' : 'Your answer'}</label><textarea class="field" id="interview-answer" maxlength="4000"></textarea>
+          <label for="interview-answer"${q.options.length && isDemo() ? ' hidden' : ''}>${q.options.length ? 'Or type your own answer' : 'Your answer'}</label><textarea class="field" id="interview-answer" maxlength="4000"${q.options.length && isDemo() ? ' hidden' : ''}></textarea>
           <div class="row"><button class="btn" id="answer" type="button">Continue</button><button class="btn ghost" id="skip-question" type="button">Skip question</button></div></div>`;
-      app.innerHTML = head('Conversation', 'Let’s explore your experience.', 'Share only what you are comfortable sharing. Your profile and conversation will be sent to Google Gemini to generate questions and your roadmap. You can skip a question or finish at any time.') +
-        data.turns.map((t) => `<div class="card stack"><strong>${esc(t.question)}</strong><p>${esc(t.answer)}</p></div>`).join('') + current +
-        (q && q.done ? '' : `<div class="row" style="margin-top:20px"><button class="btn ghost" id="finish-interview" type="button">Generate my roadmap</button></div>`) +
+      const demo = isDemo();
+      const found = demo ? demoSkills(data.turns.length) : [];
+      const fresh = demo ? DEMO.interview[data.turns.length - 1] : null;
+      const skillPanel = demo && data.turns.length ? `<div class="card stack skills-found"><div class="row spread"><h2>Your skill profile</h2><span class="chip gold">${found.length} skill${found.length === 1 ? '' : 's'} found</span></div>
+        <div class="chips">${found.map((x) => `<span class="chip${fresh && fresh.skills.includes(x) ? ' pop' : ''}">${esc(x)}</span>`).join('')}</div></div>` : '';
+      const progress = demo && q && !q.done ? `<p class="eyebrow">Question ${data.turns.length + 1} of ${DEMO.interview.length}</p>` : '';
+      app.innerHTML = head('Skills interview', 'Let’s find what you already have.', demo ? 'We never ask “what are your skills?” We ask what you did.' : 'Share only what you are comfortable sharing. Your profile and conversation will be sent to Google Gemini to generate questions and your roadmap. You can skip a question or finish at any time.') +
+        (demo ? skillPanel + progress : data.turns.map((t) => `<div class="card stack"><strong>${esc(t.question)}</strong><p>${esc(t.answer)}</p></div>`).join('')) + current +
+        (demo || (q && q.done) ? '' : `<div class="row" style="margin-top:20px"><button class="btn ghost" id="finish-interview" type="button">Generate my roadmap</button></div>`) +
         '<p class="small muted" id="interview-status" role="status"></p>';
       const ask = async () => {
         $('#interview-status').textContent = 'Preparing your next question…';
         $$('button', app).forEach((b) => { b.disabled = true; });
-        try { const result = await post('/api/interview/question', payload()); data.question = result.question; data.current = result; save(); picked.length = 0; draw(); }
+        try { const result = isDemo() ? await wait(450).then(() => ({ options: [], selection: 'single', done: false, ...(DEMO.interview[data.turns.length] || { ...DEMO.done, done: true }) })) : await post('/api/interview/question', payload()); data.question = result.question; data.current = result; save(); picked.length = 0; draw(); }
         catch (err) { $('#interview-status').textContent = err.message; $$('button', app).forEach((b) => { b.disabled = false; }); }
       };
       const finish = async () => {
         $('#interview-status').textContent = 'Building your plan. This can take up to a minute…';
         $$('button', app).forEach((b) => { b.disabled = true; });
-        try { data.roadmap = await post('/api/interview/roadmap', payload()); save(); location.hash = '#/interview-roadmap'; }
+        try { data.roadmap = isDemo() ? await wait(1400).then(() => DEMO.roadmap) : await post('/api/interview/roadmap', payload()); save(); location.hash = '#/interview-roadmap'; }
         catch (err) { $('#interview-status').textContent = err.message; $$('button', app).forEach((b) => { b.disabled = false; }); }
       };
       const submit = (answer) => { data.turns.push({ question: data.question, answer }); data.question = ''; data.current = null; data.roadmap = null; save(); draw(); ask(); };
@@ -284,6 +297,13 @@
         if (answer) submit(answer); else $('#interview-status').textContent = q.options.length ? 'Pick an option, type an answer, or skip this question.' : 'Enter an answer or skip this question.';
       };
       if ($('#skip-question')) $('#skip-question').onclick = () => submit('Skipped');
+      // The demo arrives with Melissa's answer already filled in.
+      if (demo && q && !q.done) {
+        (q.picked || []).forEach((i) => { const b = $(`[data-pick="${i}"]`); if (b) { if (many) b.click(); else { picked.push(i); b.setAttribute('aria-pressed', 'true'); } } });
+        if (q.typed) $('#interview-answer').value = q.typed;
+        $('#skip-question').hidden = true;
+        $('#answer').focus();
+      }
       if ($('#build-plan')) $('#build-plan').onclick = finish;
       if ($('#finish-interview')) $('#finish-interview').onclick = finish;
     };
@@ -293,6 +313,7 @@
   async function viewSummary() {
     app.innerHTML = loading('Putting your summary together');
     const s = await cached('summary', '/api/summary', { profile: state.profile });
+    if (isDemo()) s.firstSteps = [];
     // Shows only what the onboarding questionnaire asks: name, last role, field,
     // skills and tools, when they stepped away, where to improve, start date, education.
     const p = state.profile;
@@ -312,8 +333,8 @@
       </div>
       <div class="card stack" style="margin-top:16px"><div class="row spread"><h2>Your gap, in one sentence</h2><button class="btn ghost small" id="copy-gap" type="button">Copy</button></div>
         <p class="quote">${esc(s.gapLine)}</p><p class="small muted">Use this on your resume and LinkedIn, and as the start of your answer in interviews.</p></div>
-      <h2 style="margin:34px 0 14px">Your first three steps</h2>
-      <div class="next">${s.firstSteps.map((f) => `<a href="#/${esc(f.step)}">${esc(f.text)}</a>`).join('')}</div>
+      ${s.firstSteps.length ? `<h2 style="margin:34px 0 14px">Your first three steps</h2>
+      <div class="next">${s.firstSteps.map((f) => `<a href="#/${esc(f.step)}">${esc(f.text)}</a>`).join('')}</div>` : nextStep('interview', 'Meet your coach')}
       <p class="small muted" style="margin-top:24px"><a href="#/quiz">Edit my answers</a></p>`;
     $('#copy-gap').onclick = () => copy(s.gapLine);
   }
@@ -324,10 +345,13 @@
       const findings = (items) => items.map((x) => `<li><strong>${esc(x.name)}</strong>: ${esc(x.assessment)} <span class="muted">Evidence: ${esc(x.evidence)}</span></li>`).join('');
       app.innerHTML = head('Your roadmap', 'A plan built around you.', esc(plan.summary)) +
         `<div class="card stack"><h2>Your skill profile</h2><ul>${findings(plan.strengths)}</ul></div>` +
+        (plan.gap_line ? `<div class="card stack" style="margin-top:16px"><div class="row spread"><h2>Your career break, rewritten</h2><button class="btn ghost small" id="copy-gap" type="button">Copy</button></div><p class="quote">${esc(plan.gap_line)}</p><p class="small muted">Use this on your resume and LinkedIn, and as the start of your answer in interviews.</p></div>` : '') +
         ((plan.pathways || []).length ? `<h2 style="margin:28px 0 14px">Pathways to explore</h2>` + plan.pathways.map((x) => `<div class="card stack"><h2>${esc(x.name)}</h2><p><strong>Why it fits:</strong> ${esc(x.why_it_fits)}</p><p><strong>What it needs:</strong> ${esc(x.what_it_needs)}</p><p><strong>How it fits your life:</strong> ${esc(x.how_it_fits_life)}</p><p><strong>First step:</strong> ${esc(x.first_step)}</p><p class="small muted">${esc(x.reality_check)}</p></div>`).join('') : '') +
-        `<div class="card stack" style="margin-top:16px"><h2>Areas to explore or develop</h2><ul>${findings(plan.growth_areas)}</ul><h2>Still to clarify</h2><ul>${plan.unknowns.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` +
+        ((plan.growth_areas || []).length || (plan.unknowns || []).length ? `<div class="card stack" style="margin-top:16px"><h2>Areas to explore or develop</h2><ul>${findings(plan.growth_areas || [])}</ul><h2>Still to clarify</h2><ul>${(plan.unknowns || []).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>` : '') +
+        `<h2 style="margin:28px 0 14px">Your first three steps</h2>` +
         plan.steps.map((s, i) => `<div class="card stack"><h2>${i + 1}. ${esc(s.title)}</h2><p>${esc(s.action)}</p><p><strong>Resources:</strong> ${esc(s.resource_guidance)}</p><p class="muted">${esc(s.timeframe)}</p></div>`).join('') +
-        '<p class="small muted">AI-generated guidance is informational; verify resources and requirements before acting.</p><a href="#/interview">Continue the conversation</a>';
+        '<p class="small muted">AI-generated guidance is informational; verify resources and requirements before acting.</p>' + (isDemo() ? '' : '<a href="#/interview">Continue the conversation</a>');
+      if ($('#copy-gap')) $('#copy-gap').onclick = () => copy(plan.gap_line);
       return;
     }
     location.hash = '#/interview';
@@ -634,7 +658,8 @@
   async function route() {
     let key = (location.hash.replace(/^#\/?/, '') || '').split('?')[0];
     // New and returning unfinished visitors go straight to their saved question.
-    if (!state.done && key !== 'quiz') {
+    if (key === 'demo' && DEMO) { loadDemo(); return; }
+    if (!state.done && key !== 'quiz' && key !== '') {
       key = 'quiz';
       history.replaceState(null, '', '#/quiz');
     }

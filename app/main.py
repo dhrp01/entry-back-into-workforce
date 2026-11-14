@@ -120,7 +120,7 @@ def generate_assessment(answers: list[dict]) -> Assessment:
         + json.dumps(answers, ensure_ascii=False)
     )
     response = client.models.generate_content(
-        model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
+        model=os.getenv("GEMINI_MODEL", "gemini-4-hydrogen"),
         contents=prompt,
         config={"response_mime_type": "application/json", "response_schema": Assessment},
     )

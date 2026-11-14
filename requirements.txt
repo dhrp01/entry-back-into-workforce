@@ -1,3 +1,7 @@
 # Optional. The app runs on the Python standard library alone.
 # Install this to turn on the live refresher and the Claude resume review.
 anthropic
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+google-genai>=1.0,<2
+python-dotenv>=1,<2

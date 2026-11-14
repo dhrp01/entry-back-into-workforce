@@ -1,3 +1,4 @@
+import itertools
 import os
 
 import streamlit as st
@@ -63,6 +64,8 @@ def stream_reply(user_text):
         system_instruction=SYSTEM_PROMPT,
         input=model_input,
         previous_interaction_id=st.session_state.last_interaction_id,
+        # Low thinking keeps replies quick enough for a chat.
+        generation_config={"thinking_level": "low"},
         stream=True,
     )
     for event in stream:
@@ -77,5 +80,8 @@ if user_text := st.chat_input("Type your answer..."):
     with st.chat_message("user"):
         st.markdown(user_text)
     with st.chat_message("assistant"):
-        reply = st.write_stream(stream_reply(user_text))
+        with st.spinner("Thinking..."):
+            chunks = stream_reply(user_text)
+            first_chunk = next(chunks, "")
+        reply = st.write_stream(itertools.chain([first_chunk], chunks))
     st.session_state.messages.append({"role": "assistant", "content": reply})

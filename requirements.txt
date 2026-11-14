@@ -1,3 +1,7 @@
 # Optional. The app runs on the Python standard library alone.
-# Install this to turn on the live refresher and the Claude resume review.
+
+# The chat coach (Gemini). Requires Python 3.10 or later.
+google-genai==2.33.0; python_version >= "3.10"
+
+# The live refresher and the Claude resume review.
 anthropic

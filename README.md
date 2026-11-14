@@ -60,3 +60,59 @@ Discover assessment → pathway suggestions → resume & gap-story builder → c
 - Resource connections made (and warm handoffs completed)
 - Self-reported confidence lift (pre/post)
 - Interviews and jobs landed at 30/60/90 days
+
+## Running the app
+
+The core app needs only Python 3.9 or later:
+
+    python3 server.py
+
+Then open http://localhost:8000.
+
+The conversation and the Gemini-built roadmap need Python 3.10 or later and a
+Gemini key:
+
+    python3 -m venv .venv
+    .venv/bin/pip install -r requirements.txt
+    cp .env.example .env      # then add GEMINI_API_KEY
+    .venv/bin/python server.py
+
+### The journey in the app
+
+1. **Onboarding** — eight questions: name, last role, field, skills and tools,
+   when they stepped away, where they want to improve, target start date, education.
+2. **Conversation** — a Gemini coach that already has those answers asks what the
+   form does not: what they did during the break, what work needs to look like to
+   fit their life, what they enjoy, what worries them. It decides when it knows enough.
+3. **Roadmap** — Gemini builds a week-by-week plan from the onboarding answers and
+   the conversation, and shows what it understood and how that shaped the plan.
+   Without a key, the app builds a standard plan from the onboarding answers.
+
+Then: Summary, What changed (field refresher), Courses, Resume review and Jobs
+(live postings with LinkedIn recruiter searches). After the roadmap is built, the
+conversation becomes a coach that works from the plan.
+
+| Feature | Without keys | With keys |
+|---|---|---|
+| Onboarding, summary, courses | Built in | Same |
+| Conversation and roadmap | Standard roadmap, no conversation | Gemini conversation and personalised roadmap (`GEMINI_API_KEY`) |
+| What changed | Curated digest per field | Live digest with sources (`ANTHROPIC_API_KEY`) |
+| Resume | Rule-based check | Line-by-line review (`ANTHROPIC_API_KEY`) |
+| Jobs | Remotive, Arbeitnow, Remote OK | Adds local listings (`ADZUNA_APP_ID`, `ADZUNA_APP_KEY`) |
+
+The conversation comes from Michelle Tessier's Streamlit + Gemini prototype
+(`michelle/streamlit-gemini-chat-prototype`); its prompt and Gemini call live in
+`rtw/coach.py`.
+
+### Code layout
+
+    server.py        HTTP server and JSON API (standard library)
+    rtw/data.py      Editable content: fields, skills, refresher items, courses
+    rtw/engine.py    Summary, standard roadmap, course matching, resume rules
+    rtw/coach.py     Gemini conversation, coach and roadmap planner
+    rtw/jobs.py      Job sources, ranking, recruiter search links
+    rtw/ai.py        Optional Claude layer for the refresher and resume review
+    static/          The single-page front end (plain HTML, CSS and JavaScript)
+
+No account and no database: answers, the conversation and plan progress are kept
+in the visitor's browser and sent to the server only to compute results.

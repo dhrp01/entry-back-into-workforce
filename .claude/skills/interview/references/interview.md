@@ -13,6 +13,39 @@ Before generating interview prep, collect:
 
 ---
 
+## The Gap Story
+
+Every returner gets asked some form of "Tell me about this gap." Build her answer before any other interview prep, and have her practice it out loud.
+
+### Shape: three parts, under 30 seconds
+1. **The fact, said plainly.** "I stepped away from teaching in 2017 to raise my four kids."
+2. **What she did, with one specific.** Pick the strongest item from her checklist: "During that time I was PTA vice president and ran scheduling for the neighborhood soccer league — [number] teams every season."
+3. **Why now, and why this role.** "My youngest started kindergarten, and I'm ready to bring that organizing work back into [field]. This role fits because [one reason tied to the job]."
+
+Every bracket is filled from her own answers. If she has no detail for part 2, use upskilling or preparation instead: "I've been refreshing my skills through [course or program]."
+
+### Rules
+- **No apology, no over-explaining.** One sentence of fact, then move forward. "Unfortunately" and "I know it's been a long time" are cut.
+- **No private details.** She never has to explain a divorce, a death, a child's diagnosis, or family finances. "A family situation needed me at home" is enough.
+- **End on the job, not the gap.** The last sentence points at the role.
+- **Her words.** Draft it, then ask her to say it out loud and change any phrase that doesn't sound like her.
+
+### Practice
+1. She types or says her version.
+2. Give one or two specific edits, not a rewrite.
+3. Ask the follow-ups an interviewer is likely to ask, one at a time:
+   - "How have you kept your skills current?"
+   - "How will you handle it when a child is sick?" (Point out she can answer with her plan — backup care, a partner, flexible hours — and that she never has to share more than that.)
+   - "Why do you want to come back now?"
+4. Stop when her answer is short, steady, and sounds like her.
+
+### Common doubts
+| She says | Answer |
+|---|---|
+| "They'll think I'm out of date." | Name one current thing she has learned or will learn first, then point to a refresher in her pathway. |
+| "Everyone else has kept working." | Explaining a gap reduces the hiring penalty by about half compared with leaving it unexplained (see `cover-letter.md`). A clear, short answer is the part she controls. |
+| "I don't have anything to show for those years." | Go back to her checklist answers and pick the item with a number. |
+
 ## Framework Validation
 
 Not all interview advice is equal. Here's what the research actually supports.

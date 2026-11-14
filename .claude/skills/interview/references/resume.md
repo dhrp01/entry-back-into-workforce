@@ -93,10 +93,10 @@ Gaps are penalized, but the penalty can be reduced.
 | Functional resumes to hide gaps: ATS-hostile, recruiters dislike | T3 |
 
 ### Strategy
-Always use chronological format. Address gaps directly:
-- Frame as upskilling: "2022-2023: Completed Google Project Management Certificate while caregiving"
-- Frame as consulting: "2021-2022: Freelance operations consulting (3 clients)"
-- Frame as sabbatical: "2023: Intentional career break for [specific activity]"
+Always use chronological format. List the career break as a titled role with accomplishment bullets from her home and volunteer work — see "The career-break resume entry" in `activity-skills.md`. Add to it when it fits:
+- Upskilling during the break: "2024: Completed [certificate] while caregiving"
+- Paid side work: "2021–2023: [Business type] ([number] clients)"
+- Formal volunteer roles as their own entries: "PTA Vice President, [School], 2020–2023"
 
 Never leave a gap unexplained — it's the most damaging signal (see cover-letter.md for callback data).
 

@@ -5,7 +5,7 @@ window.DEMO = {
     name: 'Melissa',
     lastRole: 'Elementary school teacher (2nd grade)',
     field: 'education',
-    strengths: 'Organizing, budgeting spreadsheets, working with kids and parents',
+    strengths: 'Organizing, budgeting spreadsheets, teaching',
     awayDate: '2014-08',
     improvement: 'Feeling current with technology, LinkedIn, and job applications',
     startDate: '2027-01',

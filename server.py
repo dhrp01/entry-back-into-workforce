@@ -116,7 +116,7 @@ ROUTES = {
     "/api/refresher": refresher,
     "/api/resume": resume,
     "/api/resume/pdf": extract_resume_pdf,
-    "/api/jobs": lambda b: jobs.find_jobs(b.get("profile") or {}),
+    "/api/jobs": lambda b: jobs.find_jobs(b.get("profile") or {}, b.get("location") or ""),
     "/api/coach/start": coach.start,
     "/api/plan": coach.build_plan,
 }

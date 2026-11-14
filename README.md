@@ -45,6 +45,17 @@ The whole app is designed **backward from the exit deliverable**. Direction, not
 - **Built for real life.** Every module is completable in 10-minute bites — nap-time and pickup-line friendly.
 - **Encouragement is a feature.** Celebration mechanics, rejection-recovery support, and a tone that works whether someone is returning by choice or by necessity.
 
+## US job sources
+
+Jobs are searched using the target and previous role. Remotive, Remote OK and Arbeitnow work without credentials; availability and location eligibility should be checked on each posting.
+
+For more US and Utah opportunities, copy `.env.example` to `.env` and configure:
+
+- **Adzuna:** Register at [developer.adzuna.com](https://developer.adzuna.com/), set `ADZUNA_APP_ID` and `ADZUNA_APP_KEY`, and use `ADZUNA_COUNTRY=us` (the default). Set another supported country code if needed.
+- **USAJOBS:** Register at [developer.usajobs.gov](https://developer.usajobs.gov/) and set `USAJOBS_EMAIL` and `USAJOBS_API_KEY` for federal listings. Enter a city or state in the location filter to narrow results.
+
+Restart the server after changing `.env`. Both integrations are optional. Location filtering matches the location text returned by each source; it is not a commute-radius search. A Utah DWS feed and CareerOneStop are not integrated; their access and terms need verification.
+
 ## Repo Contents
 
 | File | Description |

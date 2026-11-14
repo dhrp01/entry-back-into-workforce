@@ -23,12 +23,12 @@ CACHE_SECONDS = 60 * 60          # be a polite API client: one fetch per source 
 _cache = {}
 _lock = threading.Lock()
 
-_STOP = {"and", "the", "for", "with", "senior", "junior", "lead", "manager", "specialist", "associate",
+_STOP = {"and", "the", "for", "with", "senior", "junior", "lead", "associate",
          "officer", "executive", "head", "of", "in", "to", "a", "an"}
 
 
-def _get_json(url, timeout=15):
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
+def _get_json(url, timeout=15, headers=None):
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json", **(headers or {})})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return json.loads(resp.read().decode("utf-8", "replace"))
 
@@ -112,7 +112,7 @@ def _remoteok(_query):
 
 def _adzuna(query, where):
     app_id, app_key = os.environ.get("ADZUNA_APP_ID"), os.environ.get("ADZUNA_APP_KEY")
-    country = os.environ.get("ADZUNA_COUNTRY", "gb").lower()
+    country = os.environ.get("ADZUNA_COUNTRY", "us").lower()
     params = {"app_id": app_id, "app_key": app_key, "what": query, "results_per_page": 50,
               "content-type": "application/json"}
     if where:
@@ -135,6 +135,43 @@ def adzuna_enabled():
     return bool(os.environ.get("ADZUNA_APP_ID") and os.environ.get("ADZUNA_APP_KEY"))
 
 
+def usajobs_enabled():
+    return bool(os.environ.get("USAJOBS_EMAIL") and os.environ.get("USAJOBS_API_KEY"))
+
+
+def _usajobs(query, where):
+    params = {"Keyword": query, "ResultsPerPage": 50}
+    if where:
+        params["LocationName"] = where
+    data = _get_json("https://data.usajobs.gov/api/search?" + urllib.parse.urlencode(params), headers={
+        "Host": "data.usajobs.gov", "User-Agent": os.environ["USAJOBS_EMAIL"],
+        "Authorization-Key": os.environ["USAJOBS_API_KEY"],
+    })
+    out = []
+    for item in (data.get("SearchResult") or {}).get("SearchResultItems", []):
+        j = item.get("MatchedObjectDescriptor") or {}
+        details = j.get("UserArea", {}).get("Details", {}) or {}
+        locations = j.get("PositionLocation") or []
+        names = [loc.get("LocationName", "") for loc in locations if loc.get("LocationName")]
+        if not names:
+            names = [j.get("PositionLocationDisplay") or ""]
+        remote = details.get("RemoteIndicator") is True or str(details.get("RemoteIndicator", "")).lower() == "true"
+        remuneration = (j.get("PositionRemuneration") or [{}])[0]
+        salary = " – ".join(str(remuneration.get(k) or "") for k in ("MinimumRange", "MaximumRange")).strip(" –")
+        for location in names:
+            out.append({
+                "title": _clean(j.get("PositionTitle"), 200),
+                "company": _clean(j.get("OrganizationName") or j.get("DepartmentName"), 200),
+                "location": location, "remote": remote,
+                "url": j.get("PositionURI") or item.get("MatchedObjectId") or "", "tags": [],
+                "description": _clean(details.get("JobSummary") or j.get("QualificationSummary"), 4000),
+                "posted": _iso(j.get("PublicationStartDate")),
+                "type": ", ".join(x.get("Name", "") for x in (j.get("PositionSchedule") or []) if x.get("Name")),
+                "salary": salary, "source": "USAJOBS",
+            })
+    return out
+
+
 # ----------------------------------------------------------------- ranking ---
 def _tokens(text):
     return [t for t in re.findall(r"[a-z][a-z+#/]+", str(text or "").lower()) if len(t) > 2 and t not in _STOP]
@@ -150,17 +187,29 @@ def recruiter_link(company):
     return "https://www.linkedin.com/search/results/people/?" + urllib.parse.urlencode({"keywords": query})
 
 
-def _score(job, profile, role_tokens, field):
+def _score(job, profile, role_tokens, field, previous_tokens=None):
     title = job["title"].lower()
     blob = " ".join([title, " ".join(str(t) for t in job["tags"]).lower(), job["description"].lower()])
     score, reasons = 0, []
 
-    matched = [t for t in role_tokens if _has(t, title)]
-    if role_tokens and matched:
+    # Generic job levels alone (e.g. "manager") do not establish relevance.
+    generic = {"manager", "specialist", "director", "coordinator", "analyst", "assistant", "engineer"}
+    def title_match(tokens):
+        matched = [t for t in tokens if _has(t, title)]
+        meaningful = [t for t in tokens if t not in generic]
+        return matched if matched and (not meaningful or any(t in matched for t in meaningful)) else []
+
+    matched = title_match(role_tokens)
+    previous = title_match(previous_tokens or [])
+    if matched:
         full = len(matched) == len(role_tokens)
         score += 55 if full else 15 + round(25 * len(matched) / len(role_tokens))
-        reasons.append("Title matches your target role" if full else "Title is close to your target role")
-    elif any(_has(t, title) for t in field["titles"]):
+        reasons.append("Title matches your target role" if full else "Title shares keywords with your target role")
+    elif previous:
+        full = len(previous) == len(previous_tokens)
+        score += 50 if full else 15 + round(25 * len(previous) / len(previous_tokens))
+        reasons.append("Title matches your previous role" if full else "Title shares keywords with your previous role")
+    elif not role_tokens and any(_has(t, title) for t in field["titles"]):
         score += 22
         reasons.append("In your field: %s" % field["label"].lower())
     else:
@@ -209,18 +258,30 @@ def _score(job, profile, role_tokens, field):
     return max(0, min(100, score)), reasons
 
 
-def find_jobs(profile):
+def find_jobs(profile, location=""):
     field_key = field_of(profile)
     field = FIELDS[field_key]
     role = target_role(profile)
     role_tokens = _tokens(role)
-    place = (profile.get("location") or "").strip()
+    previous_role = (profile.get("lastRole") or "").strip()
+    previous_tokens = _tokens(previous_role) if previous_role.lower() != role.lower() else []
+    location = str(location or "").strip()
+    place = location or (profile.get("location") or "").strip()
 
     loaders = [("Remotive", "remotive:" + role.lower(), lambda: _remotive(role)),
                ("Arbeitnow", "arbeitnow", lambda: _arbeitnow(role)),
                ("Remote OK", "remoteok", lambda: _remoteok(role))]
+    if previous_tokens:
+        loaders.append(("Remotive", "remotive:" + previous_role.lower(), lambda: _remotive(previous_role)))
     if adzuna_enabled():
         loaders.append(("Adzuna", "adzuna:%s:%s" % (role.lower(), place.lower()), lambda: _adzuna(role, place)))
+        if previous_tokens:
+            loaders.append(("Adzuna", "adzuna:%s:%s" % (previous_role.lower(), place.lower()), lambda: _adzuna(previous_role, place)))
+
+    if usajobs_enabled():
+        for search_role in dict.fromkeys([role, previous_role] if previous_tokens else [role]):
+            loaders.append(("USAJOBS", "usajobs:%s:%s" % (search_role.lower(), place.lower()),
+                            lambda search_role=search_role: _usajobs(search_role, place)))
 
     results, sources = [], []
     lock = threading.Lock()
@@ -245,11 +306,14 @@ def find_jobs(profile):
     for job in results:
         if not job["title"] or not job["url"].startswith("http"):
             continue
-        key = (job["title"].lower(), job["company"].lower())
+        if location and location.casefold() not in job["location"].casefold():
+            continue
+        key = (job["title"].lower(), job["company"].lower(), job["location"].lower())
         if key in seen:
             continue
         seen.add(key)
-        score, reasons = _score(job, profile, role_tokens, field)
+        score_profile = {**profile, "location": location} if location else profile
+        score, reasons = _score(job, score_profile, role_tokens, field, previous_tokens)
         if score < 30:
             continue
         ranked.append({

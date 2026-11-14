@@ -25,7 +25,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "3–5 years"
+      "answer": "3–5 years",
+      "highlight": true
     },
     {
       "response": {
@@ -41,7 +42,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "Hit a student growth or reading goal"
+      "answer": "Hit a student growth or reading goal",
+      "highlight": false
     },
     {
       "response": {
@@ -56,7 +58,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "My whole class (around 20–30 students); 22 of my 26 second graders were reading at grade level by spring"
+      "answer": "My whole class (around 20–30 students); 22 of my 26 second graders were reading at grade level by spring",
+      "highlight": false
     },
     {
       "response": {
@@ -72,7 +75,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "Lapsed 6–10 years ago"
+      "answer": "Lapsed 6–10 years ago",
+      "highlight": false
     },
     {
       "response": {
@@ -92,7 +96,8 @@
         "selection": "multiple",
         "done": false
       },
-      "answer": "PTA/PTO officer, room parent, or school fundraising; Organized schedules or carpools for kids' activities; Managed the family budget"
+      "answer": "PTA/PTO officer, room parent, or school fundraising; Organized schedules or carpools for kids' activities; Managed the family budget",
+      "highlight": true
     },
     {
       "response": {
@@ -107,7 +112,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "PTA or PTO officer (such as president, VP, treasurer, or secretary); PTA vice president for two years; our fall fun run raised about $18,000 with 60 volunteers"
+      "answer": "PTA or PTO officer (such as president, VP, treasurer, or secretary); PTA vice president for two years; our fall fun run raised about $18,000 with 60 volunteers",
+      "highlight": false
     },
     {
       "response": {
@@ -122,7 +128,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "5 or more people and 10+ weekly activities; I ran the neighborhood youth soccer league schedule: 12 teams and about 140 families each season"
+      "answer": "5 or more people and 10+ weekly activities; I ran the neighborhood youth soccer league schedule: 12 teams and about 140 families each season",
+      "highlight": true
     },
     {
       "response": {
@@ -138,7 +145,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "$60,000–$100,000 a year; About $95,000 a year in a spreadsheet; we paid off our car two years early"
+      "answer": "$60,000–$100,000 a year; About $95,000 a year in a spreadsheet; we paid off our car two years early",
+      "highlight": false
     },
     {
       "response": {
@@ -153,7 +161,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "School hours only"
+      "answer": "School hours only",
+      "highlight": false
     },
     {
       "response": {
@@ -166,7 +175,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "Part of the puzzle"
+      "answer": "Part of the puzzle",
+      "highlight": false
     },
     {
       "response": {
@@ -181,7 +191,8 @@
         "selection": "multiple",
         "done": false
       },
-      "answer": "Working with people; Information and numbers"
+      "answer": "Working with people; Information and numbers",
+      "highlight": true
     },
     {
       "response": {
@@ -196,7 +207,8 @@
         "selection": "multiple",
         "done": false
       },
-      "answer": "Busy and social; Variety"
+      "answer": "Busy and social; Variety",
+      "highlight": false
     },
     {
       "response": {
@@ -213,7 +225,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "Coordinating events or community programs; Running events for a company"
+      "answer": "Coordinating events or community programs; Running events for a company",
+      "highlight": false
     },
     {
       "response": {
@@ -229,7 +242,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "15–25 hours"
+      "answer": "15–25 hours",
+      "highlight": false
     },
     {
       "response": {
@@ -246,7 +260,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "$20–$25/hour"
+      "answer": "$20–$25/hour",
+      "highlight": false
     },
     {
       "response": {
@@ -262,7 +277,8 @@
         "selection": "single",
         "done": false
       },
-      "answer": "Hybrid"
+      "answer": "Hybrid",
+      "highlight": false
     },
     {
       "response": {
@@ -279,7 +295,8 @@
         "selection": "ranked",
         "done": false
       },
-      "answer": "A flexible schedule > Getting back to work fastest > Pay"
+      "answer": "A flexible schedule > Getting back to work fastest > Pay",
+      "highlight": true
     },
     {
       "response": {
@@ -289,7 +306,8 @@
         "selection": "single",
         "done": true
       },
-      "answer": null
+      "answer": null,
+      "highlight": true
     }
   ],
   "roadmap": {

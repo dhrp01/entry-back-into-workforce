@@ -15,7 +15,7 @@ export type Plan = { mode: 'live' | 'starter'; note?: string; understood: string
 export type Turn = { question: string; answer: string };
 /** One message from the interview skill (PR #4): an optional intro, the
     question, answer choices and how to pick them, and whether the intake is done. */
-export type InterviewQuestion = { intro: string; question: string; options: string[]; selection: 'single' | 'multiple' | 'ranked'; done: boolean };
+export type InterviewQuestion = { intro: string; question: string; options: string[]; selection: 'single' | 'multiple' | 'ranked'; done: boolean; demo_answer?: string };
 export type Interview = { turns: Turn[]; question: string; current?: InterviewQuestion | null; roadmap: any };
 export type Field = { key: string; label: string; roles: string[] };
 export type Config = { ai: boolean; adzuna: boolean; coach: { enabled: boolean; reason: string }; fields: Field[] };

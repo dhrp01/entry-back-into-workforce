@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from 
 import { BookOpen, Briefcase, FileText, LayoutDashboard, Map, MapPin, Moon, Sparkles, Sun } from 'lucide-react';
 import { getState, resetAll, setState, useStore } from './lib/store';
 import { replace, useRoute } from './lib/router';
+import { startDemo } from './lib/demo';
 import { Skeleton, Toaster } from './components/ui';
 
 // Each screen is its own chunk, downloaded the first time it is opened.
@@ -57,6 +58,7 @@ export function App() {
 
   // Unfinished visitors always land on their saved question, as before.
   useEffect(() => {
+    if (route === 'demo') { startDemo(); return; }
     if (!getState().done && route !== 'quiz') replace('quiz');
     else if (MOVED[route]) replace(MOVED[route]);
     else if (route && route !== 'quiz' && !PAGES[route]) replace('');

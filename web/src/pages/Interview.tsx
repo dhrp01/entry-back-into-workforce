@@ -4,12 +4,13 @@
    - a single choice submits on tap; several picks join with "; "; a ranking joins with " > "
    - a typed answer is added after any picks; "Skipped" skips
    - when `done` is true the intake is over and the person builds their plan. */
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Check, Send, SkipForward, Wand2 } from 'lucide-react';
 import { post } from '../lib/api';
 import { getState, setState, useStore, type Interview as InterviewT, type InterviewQuestion } from '../lib/store';
 import { go } from '../lib/router';
 import { celebrate } from '../lib/util';
+import { prefill } from '../lib/demo';
 import { PageHead } from '../components/ui';
 
 export default function Interview() {
@@ -26,6 +27,13 @@ export default function Interview() {
     ? { intro: '', options: [], selection: 'single', done: false, ...(data.current || {}), question: data.question }
     : null;
   const many = !!q && q.selection !== 'single';
+
+  // Demo mode: select the recorded answer, so the presenter only presses Continue.
+  useEffect(() => {
+    if (!q?.demo_answer || q.done) return;
+    const { picked: chosen, typed } = prefill(q);
+    setPicked(chosen); setAnswer(typed);
+  }, [data.question]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useLayoutEffect(() => { log.current?.scrollTo({ top: log.current.scrollHeight, behavior: 'smooth' }); }, [data.turns.length, data.question, busy]);
 

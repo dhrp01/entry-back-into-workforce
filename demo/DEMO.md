@@ -6,28 +6,31 @@ The demo replays a real interview that was recorded with Gemini ahead of time. O
 
 Open two terminal windows in the `entry-back-into-workforce` folder.
 
+**Once, if the interface is not built yet:**
+```
+cd web && npm install && npm run build && cd ..
+```
+
 **Terminal 1 — the interview API, in demo mode:**
 ```
 INTERVIEW_DEMO=1 .venv/bin/python -m uvicorn app.main:app --port 8001
 ```
 
-**Terminal 2 — the web app:**
+**Terminal 2 — the web app, in demo mode:**
 ```
-.venv/bin/python server.py
+INTERVIEW_DEMO=1 .venv/bin/python server.py
 ```
 
-Then, in the browser:
+Then open `http://localhost:8000/#/demo` in the browser. It loads Melissa's onboarding answers and opens her summary. Zoom to about 125%.
 
-1. Open `http://localhost:8000/#/demo`. It loads Melissa's onboarding answers and opens her summary.
-2. Zoom to about 125% so the room can read it.
-3. Click **Skills interview** in the top bar once, to check that the **Start conversation** button shows. Then click **Summary** to go back.
+In demo mode nothing calls Gemini: the questions come from `demo/recording.json`, and the courses and week-by-week plan use the app's built-in rules.
 
 To run it again, open `http://localhost:8000/#/demo` again. It resets the interview.
 
 ## How the demo moves
 
 - The interview has 10 screens. Melissa's answer is already selected on each one. You click **Continue** to move on.
-- **Build my plan** shows the recorded plan at once.
+- **Build my roadmap and courses** opens the roadmap: her skill profile and pathways, then a week-by-week plan.
 
 ## Timeline
 
@@ -43,7 +46,7 @@ To run it again, open `http://localhost:8000/#/demo` again. It resets the interv
 | 1:10–1:25 | 7. Day-to-day appeal | Pause, then **Continue** | Read the top of the intro: "You translated your time at home into 8 professional skills." "This is where she stops saying 'I have no skills.'" |
 | 1:25–1:30 | 8. Pay | **Continue** | "What a job needs to pay to make sense for her family." |
 | 1:30–1:35 | 9. Ranking | **Continue** | "She ranks what matters most: a flexible schedule first. Her number one never breaks." |
-| 1:35–1:40 | 10. Closing | **Build my plan** | "It sums up her evidence." |
+| 1:35–1:40 | 10. Closing | **Build my roadmap and courses** | "It sums up her evidence." |
 | 1:40–1:55 | The plan | Scroll to **Pathways to explore** | "Three pathways. Each says why it fits *her*, what it takes, a first step with a Utah resource, and what it could not verify." |
 | 1:55–2:00 | The plan | Nothing | "Every claim comes from her own answers. Melissa leaves with a plan, not a reading list." |
 

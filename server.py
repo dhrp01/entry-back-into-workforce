@@ -111,6 +111,35 @@ def interview_proxy(path, body):
         raise ValueError("Conversation server unavailable. Start the FastAPI server on port 8001.") from None
 
 
+DEMO_RECORDING = os.path.join(ROOT, "demo", "recording.json")
+
+
+def demo_recording():
+    """In demo mode (INTERVIEW_DEMO=1), the recorded demo interview; otherwise None."""
+    if os.environ.get("INTERVIEW_DEMO") != "1" or not os.path.isfile(DEMO_RECORDING):
+        return None
+    with open(DEMO_RECORDING, encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def pick_courses(body):
+    """Courses. In demo mode: the recorded pick, or the rule-based pick, never a live model call."""
+    recording = demo_recording()
+    if recording is None:
+        return courses.pick(body)
+    return recording.get("courses") or {"mode": "starter", "courses": courses._rule_based(body)}
+
+
+def build_plan(body):
+    """The week-by-week plan. In demo mode: the recorded plan, or the standard plan, never a live model call."""
+    recording = demo_recording()
+    if recording is None:
+        return coach.build_plan(body)
+    if recording.get("plan"):
+        return recording["plan"]
+    return dict(engine.build_roadmap(body.get("profile") or {}), mode="starter", understood=[], decisions=[], note="")
+
+
 ROUTES = {
     "/api/interview/question": lambda b: interview_proxy("/interview/question", b),
     "/api/interview/roadmap": lambda b: interview_proxy("/interview/roadmap", b),
@@ -119,13 +148,13 @@ ROUTES = {
     "/api/roadmap": lambda b: engine.build_roadmap(b.get("profile") or {}),
     # Courses from the questionnaire and, when sent, the skills interview
     # (turns and findings). Without interview data this is the rule-based pick.
-    "/api/courses": courses.pick,
+    "/api/courses": pick_courses,
     "/api/refresher": refresher,
     "/api/resume": resume,
     "/api/resume/pdf": extract_resume_pdf,
     "/api/jobs": lambda b: jobs.find_jobs(b.get("profile") or {}),
     "/api/coach/start": coach.start,
-    "/api/plan": coach.build_plan,
+    "/api/plan": build_plan,
 }
 
 

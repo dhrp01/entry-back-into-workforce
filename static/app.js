@@ -104,10 +104,7 @@
   };
 
   function cheer() {
-    // One onboarding section, so one closing card: it hands over to the conversation.
-    const p = state.profile;
-    const role = p.lastRole ? `Your time as ${/^[aeiou]/i.test(p.lastRole) ? 'an' : 'a'} <strong>${esc(p.lastRole)}</strong> does not expire. ` : '';
-    return { title: 'That is your starting point.', body: `<p>${role}You have just done the hardest part, which is starting.</p><p>Next is a short conversation with your coach, in your own words, so your roadmap fits your real life and not just a form.</p>`, final: true };
+    return { title: 'That is everything we need.', body: '<p>You have just done the hardest part, which is starting. Your summary and plan are ready.</p>', final: true };
   }
 
   // ------------------------------------------------------------- the quiz ---
@@ -132,7 +129,7 @@
     if (cur.kind === 'cheer') {
       const ch = cheer(cur.section);
       body = `<div class="cheer"><div class="card stack"><p class="eyebrow">Section ${cur.section + 1} of ${SECTIONS.length} complete</p><h1>${esc(ch.title)}</h1>${ch.body}</div>
-        <div class="quiz-actions"><button class="btn ghost" id="back" type="button">Back</button><button class="btn" id="next" type="button">${ch.final ? 'Meet my coach' : 'Continue'}</button></div></div>`;
+        <div class="quiz-actions"><button class="btn ghost" id="back" type="button">Back</button><button class="btn" id="next" type="button">${ch.final ? 'See my summary' : 'Continue'}</button></div></div>`;
     } else {
       const q = cur.q; const v = state.profile[q.id];
       let input = '';
@@ -201,9 +198,9 @@
     state.jobs = null;
     state.interview = { turns: [], question: '', roadmap: null };
     store.set('interview', state.interview);
-    state.plan = null; store.set('plan', null);
-    state.chat = null; store.set('chat', null);
-    location.hash = '#/interview';
+    state.plan = null; store.set('plan', null);   // the roadmap is rebuilt after the conversation
+    if (state.chat && state.chat.messages.length < 2) { state.chat = null; store.set('chat', null); }
+    location.hash = '#/summary';
   }
 
   // ---------------------------------------------------------------- views ---

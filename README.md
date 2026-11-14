@@ -65,3 +65,21 @@ Discover assessment → pathway suggestions → resume & gap-story builder → c
 - Resource connections made (and warm handoffs completed)
 - Self-reported confidence lift (pre/post)
 - Interviews and jobs landed at 30/60/90 days
+
+## Running the app (React front end)
+
+The interface lives in `web/` (React + TypeScript, built with Vite). Build it once
+(needs Node 20 or later), then start the two servers:
+
+    cd web && npm install && npm run build && cd ..
+    uvicorn app.main:app --port 8001     # skills interview
+    python3 server.py                    # app and API on http://localhost:8000
+
+`server.py` serves `web/dist` when it exists and falls back to the original page in
+`static/` otherwise. For hot reload while editing the interface, run `npm run dev`
+in `web/` (http://localhost:5173; it forwards `/api` to port 8000).
+
+Journey: a five-question questionnaire, then the skills interview, then a roadmap
+(skill profile, pathways and a week-by-week plan) and courses built from both.
+The Utah resources tab matches her answers to the team's vetted list, which lives
+in `web/src/lib/utahResources.ts`.

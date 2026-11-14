@@ -10,23 +10,22 @@
     "education": "Bachelor's in Elementary Education; Utah teaching license"
   },
   "answers": {
-    "how long in last job": "3–5 years",
-    "one thing done well": "Hit a goal",
-    "one thing done well, detail": "22 of my 26 second graders were reading at grade level by spring",
-    "licenses or certificates, lapsed": "My Utah teaching license lapsed in 2018",
-    "activity checklist": ["PTA/PTO officer, room parent, or school fundraising", "Organized schedules or carpools for kids' activities", "Managed the family budget"],
-    "PTA detail": "PTA vice president for two years; our fall fun run raised about $18,000 with 60 volunteers",
-    "schedules detail": "I ran the neighborhood youth soccer league schedule: 12 teams and about 140 families each season",
-    "budget detail": "About $95,000 a year in a spreadsheet; we paid off our car two years early",
+    "activity checklist": [
+      "PTA/PTO officer, room parent, or school fundraising",
+      "Organized schedules or carpools for kids' activities",
+      "Managed the family budget"
+    ],
+    "PTA detail": "PTA vice president; our fun run raised $18,000 with 60 volunteers",
+    "schedules detail": "Ran the soccer league schedule: 12 teams, 140 families",
     "schedule": "School hours only",
-    "childcare": "Part of the puzzle",
-    "day-to-day appeal": ["Working with people", "Information and numbers"],
-    "environment, social": "Busy and social",
-    "environment, variety": "Variety",
-    "wildcard": "Running events for a company",
-    "hours": "15–25",
-    "pay": "$20–$25/hour",
-    "where": "Hybrid",
-    "ranking": ["A flexible schedule", "Getting back to work fastest", "Pay"]
+    "day-to-day appeal": [
+      "Working with people",
+      "Information and numbers"
+    ],
+    "ranking": [
+      "A flexible schedule",
+      "Getting back to work fastest",
+      "Pay"
+    ]
   }
 }

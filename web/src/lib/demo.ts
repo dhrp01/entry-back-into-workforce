@@ -17,7 +17,7 @@ export async function startDemo() {
   }
 }
 
-/** Split a recorded answer into the options it picks (in order) and any typed text. */
+/** Split a recorded answer into the options it picks (in order) or typed text: never both. */
 export function prefill(q: InterviewQuestion): { picked: number[]; typed: string } {
   const picked: number[] = [];
   const typed: string[] = [];
@@ -26,5 +26,5 @@ export function prefill(q: InterviewQuestion): { picked: number[]; typed: string
     if (i < 0) typed.push(part);
     else if (!picked.includes(i)) picked.push(i);
   }
-  return { picked, typed: typed.filter(Boolean).join('; ') };
+  return picked.length ? { picked, typed: '' } : { picked, typed: typed.filter(Boolean).join('; ') };
 }

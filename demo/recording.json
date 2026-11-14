@@ -44,7 +44,7 @@
         "selection": "single",
         "done": false
       },
-      "answer": "PTA or PTO officer (such as president, VP, treasurer, or secretary); PTA vice president for two years; our fall fun run raised about $18,000 with 60 volunteers"
+      "answer": "PTA vice president; our fun run raised $18,000 with 60 volunteers"
     },
     {
       "response": {
@@ -59,23 +59,7 @@
         "selection": "single",
         "done": false
       },
-      "answer": "5 or more people and 10+ weekly activities; I ran the neighborhood youth soccer league schedule: 12 teams and about 140 families each season"
-    },
-    {
-      "response": {
-        "intro": "Coordinating a soccer league schedule for 12 teams and 140 families is real logistics coordination, scheduling, and multi-priority management—the exact work operations coordinators are paid to do. Combined with the stakeholder communication, event planning, fundraising, and volunteer coordination from your PTA role, you already have 7 professional skills.",
-        "question": "Last one from your list: for managing the family budget, roughly how much did it cover per year, and did it help you reach a goal like paying something off?",
-        "options": [
-          "Under $30,000 a year",
-          "$30,000–$60,000 a year",
-          "$60,000–$100,000 a year",
-          "Over $100,000 a year",
-          "Not sure of the exact total"
-        ],
-        "selection": "single",
-        "done": false
-      },
-      "answer": "$60,000–$100,000 a year; About $95,000 a year in a spreadsheet; we paid off our car two years early"
+      "answer": "Ran the soccer league schedule: 12 teams, 140 families"
     },
     {
       "response": {
@@ -94,19 +78,6 @@
     },
     {
       "response": {
-        "intro": "Got it, Melissa—sticking to school hours gives us a clear boundary to filter for.",
-        "question": "Is childcare sorted, or is it still part of the puzzle?",
-        "options": [
-          "Sorted",
-          "Part of the puzzle"
-        ],
-        "selection": "single",
-        "done": false
-      },
-      "answer": "Part of the puzzle"
-    },
-    {
-      "response": {
         "intro": "Got it, Melissa — we'll factor childcare into your plan and look at options like Utah Child Care Assistance when we put your next steps together. That wraps up Part 2, and look at what you just built: you translated your time at home into 8 professional skills — fundraising and volunteer coordination (from raising $18,000 with 60 volunteers as PTA vice president), event planning and stakeholder communication (from your two years as a PTA officer), logistics coordination and scheduling (from running the 12-team, 140-family youth soccer league schedule alongside weekly family logistics), and budget management and financial planning (from managing a $95,000 annual budget and paying off your car two years early). Now for the last part — about 5 minutes on what you'd enjoy and what a job needs to look like for you.",
         "question": "Which of these sounds most appealing day-to-day? Pick one or two.",
         "options": [
@@ -119,40 +90,6 @@
         "done": false
       },
       "answer": "Working with people; Information and numbers"
-    },
-    {
-      "response": {
-        "intro": "15–25 hours a week lines up well with school hours and gives us a clear part-time range to aim for.",
-        "question": "What does a job need to pay to make sense for your family?",
-        "options": [
-          "Under $15/hour",
-          "$15–$20/hour",
-          "$20–$25/hour",
-          "$25–$35/hour",
-          "$35+/hour",
-          "Not sure"
-        ],
-        "selection": "single",
-        "done": false
-      },
-      "answer": "$20–$25/hour"
-    },
-    {
-      "response": {
-        "intro": "Hybrid is a helpful middle ground—it gives you the in-person connection you want while keeping part of your week closer to home as you figure out childcare.",
-        "question": "Last question: which of these matter most to you right now? Rank your top three, with the most important first.",
-        "options": [
-          "Pay",
-          "Hours",
-          "In-person, hybrid, or remote",
-          "A flexible schedule",
-          "Getting back to work fastest",
-          "Room to grow"
-        ],
-        "selection": "ranked",
-        "done": false
-      },
-      "answer": "A flexible schedule > Getting back to work fastest > Pay"
     },
     {
       "response": {

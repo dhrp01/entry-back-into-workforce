@@ -41,20 +41,41 @@ def _decorate(course, profile, budget):
     return item
 
 
+MAX_COURSES = 4
+MAX_AI_COURSES = 1
+_AI_TITLE = re.compile(r"\bAI\b|artificial intelligence|machine learning|prompt", re.I)
+
+
+def _trim(picks):
+    """No repeats, at most MAX_AI_COURSES courses about AI, and MAX_COURSES in all."""
+    out, seen, ai_count = [], set(), 0
+    for course in picks:
+        key = course.get("url") or course.get("title")
+        if key in seen:
+            continue
+        if _AI_TITLE.search(course.get("title", "")):
+            if ai_count >= MAX_AI_COURSES:
+                continue
+            ai_count += 1
+        seen.add(key)
+        out.append(course)
+    return out[:MAX_COURSES]
+
+
 def _rule_based(body):
     """The engine's pick, re-ranked by how often a course's topic appears in the interview."""
     profile = body.get("profile") or {}
     text = _interview_text(body)
     picked = engine.pick_courses(profile)
     if not text:
-        return picked
+        return _trim(picked)
     def overlap(course):
         words = set(re.findall(r"[a-z]{4,}", (course["title"] + " " + course["why"]).lower()))
         return sum(1 for w in words if w in text)
     extra = sorted((c for c in COURSES if c not in picked), key=overlap, reverse=True)[:2]
     budget = engine.weeks_to_start(profile) * engine.hours_per_week(profile)
     ranked = sorted(picked, key=overlap, reverse=True) + [_decorate(c, profile, budget) for c in extra if overlap(c) > 1]
-    return ranked[:7]
+    return _trim(ranked)
 
 
 def pick(body):
@@ -86,7 +107,7 @@ def pick(body):
                 out.append(item)
         if len(out) < 2:
             raise ValueError("too few catalogue courses chosen")
-        return {"mode": "live", "courses": out[:6]}
+        return {"mode": "live", "courses": _trim(out)}
     except Exception as exc:  # keep the page useful whatever happens upstream
         print("[courses] %r; using the rule-based pick" % exc, file=sys.stderr)
         return {"mode": "starter", "courses": _rule_based(body)}

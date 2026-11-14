@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from datetime import date
 
-from app.interview import (QUESTION_REFERENCES, ROADMAP_REFERENCES, SKILLS, InterviewRequest,
+from app.interview import (MAX_QUESTION_CALLS, QUESTION_REFERENCES, ROADMAP_REFERENCES, SKILLS, InterviewRequest,
                            Question, Roadmap, generate, onboarding_context)
 
 
@@ -115,3 +115,13 @@ def test_empty_onboarding_answers_are_treated_as_unanswered():
 def test_interview_allows_a_long_intake():
     turns = [{'question': f'Q{i}', 'answer': 'A'} for i in range(45)]
     assert len(InterviewRequest(turns=turns).turns) == 45
+
+
+def test_interview_closes_without_a_model_call_after_the_question_budget(monkeypatch):
+    prompts = []
+    fake_gemini(monkeypatch, prompts, '{"question": "Q?"}')
+    turns = [{'question': f'Q{i}', 'answer': 'A'} for i in range(MAX_QUESTION_CALLS)]
+    with TestClient(app) as client:
+        assert client.post('/interview/question', json={'turns': turns[:-1]}).json()['done'] is False
+        assert client.post('/interview/question', json={'turns': turns}).json()['done'] is True
+    assert len(prompts) == 1

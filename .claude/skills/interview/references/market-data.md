@@ -7,7 +7,7 @@ Verified labor market data for calibrating job search expectations and salary re
 Take these from the intake; ask only for what is missing:
 - Chosen pathway (target role and field)
 - Location — most users are on Utah's Wasatch Front
-- Hours and remote preference (Q6)
+- Hours and remote preference (Q10, Q12)
 ---
 
 ## For Returning Moms

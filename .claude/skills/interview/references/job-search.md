@@ -6,7 +6,7 @@ Strategy and channel effectiveness data for job searching. Built on funnel analy
 
 Take these from the intake; ask only for what is missing:
 - Chosen pathway (target role and field)
-- Hours, schedule, location, and start date (Q6)
+- Hours, schedule, location, and start date (Q6, Q10, Q12)
 - How much time per week she can give the search right now
 - Whether she has applied anywhere yet, and through which channels
 - Whether this is a necessity return (urgent income need)
@@ -16,7 +16,7 @@ Take these from the intake; ask only for what is missing:
 
 - **Start with returner channels.** Returnships and returner programs (`utah-resources.md`) are built for people with a gap. Check them before job boards.
 - **Her community is a referral network.** Referrals beat job boards by a wide margin (see Channel Effectiveness). Former colleagues, other parents, PTA and church contacts, and neighbors all count. Help her list five people who work in or near her target field.
-- **Filter for her constraints.** Search for part-time, school-hours, remote, or flexible roles first when Q6 calls for it. Don't send her to roles that break her constraints.
+- **Filter for her constraints.** Search for part-time, school-hours, remote, or flexible roles first when her answers call for it. Don't send her to roles that break her constraints.
 - **Size the plan to her time.** She often has 10-minute blocks, not whole days. Let her pick a weekly target (for example, 2 tailored applications and 1 outreach message) and build up from there.
 - **Necessity return:** put fastest-income options first, and send her to DWS for same-week help.
 - **Rejection is part of the process.** Say so before the first application. When rejections come, name what is working, and use the reassessment triggers below instead of "keep trying."

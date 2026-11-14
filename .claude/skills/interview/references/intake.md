@@ -46,44 +46,59 @@ Open with: *"This part is about the time you've been home. Most people are surpr
 **After each answer:** name the skills it shows. Keep a running count.
 **Feeds:** skill profile; the career-break resume entry; volunteer resume entries; pathway matching.
 
-### Q6 — What work needs to look like
+### Q6 — How work fits her life
 **Ask each as its own message:**
-- Hours: under 15 / 15–25 / 25–35 / full-time / not sure.
 - Schedule: school hours only / flexible / evenings or weekends / any.
-- Where: remote / hybrid / in-person / any.
 - Childcare: "Is childcare sorted, or part of the puzzle?" — sorted / part of the puzzle / skip.
 - Earliest start: now / within 3 months / 3–6 months / later.
 **Feeds:** pathway filtering; resource suggestions (childcare assistance).
-
-### Q7 — Pay that makes sense
-**Ask:** "What does a job need to pay to make sense for your family?"
-**Options:** hourly or yearly ranges / not sure.
-**If "not sure":** note it; at the pathway step, show pay ranges and point out that the long-term view (raises, retirement, Social Security credits) matters as well as this year's childcare cost.
-Use this answer to filter pathways; do not repeat the number back in written materials.
 
 **End of Session 2:** "You just translated your time at home into N professional skills." List each skill with its evidence.
 
 ---
 
-## Session 3 — Your Direction (~3 min)
+## Session 3 — Your Direction (~5 min)
 
-Open with: *"Last part — about what you'd actually enjoy. About 3 minutes."*
+Open with: *"Last part — what you'd enjoy, and what a job needs to look like for you. About 5 minutes."*
 
-### Q8 — Day-to-day appeal
+Ask the interest questions first (Q7–Q9), then the practical ones (Q10–Q12), then the ranking (Q13). The ranking comes last so it sits right before the pathways it controls.
+
+### Q7 — Day-to-day appeal
 **Ask:** "Which of these sounds most appealing day-to-day? Pick one or two."
 **Options:** working with people / information and numbers / hands-on things / ideas and creativity.
 **Feeds:** pathway matching (a simplified Holland-code read).
 
-### Q9 — Environment
+### Q8 — Environment
 **Ask as two quick picks:** busy and social, or quiet and focused? Variety, or routine?
 
-### Q10 — What matters most now
-**Ask:** "What matters most right now?"
-**Options:** getting back to work fastest / most room to grow / most flexibility.
-**Feeds:** ranks the pathways.
-
-### Q11 — The wildcard (optional)
+### Q9 — The wildcard (optional)
 **Ask:** "Anything you've always wondered if you'd be good at?"
 **Feeds:** a wildcard pathway if it fits; otherwise a note for later.
 
-**Exit:** skill profile + 2–3 pathways with honest fit reasoning (why it matches, pay range, training time and cost, flexibility). Ask which one to explore first.
+### Q10 — Hours
+**Ask:** "About how many hours a week do you want to work?"
+**Options:** under 15 / 15–25 / 25–35 / full-time / not sure.
+
+### Q11 — Pay that makes sense
+**Ask:** "What does a job need to pay to make sense for your family?"
+**Options:** under $15/hour / $15–$20 / $20–$25 / $25–$35 / $35+/hour / not sure.
+**If "not sure":** note it; at the pathway step, show pay ranges and point out that the long-term view (raises, retirement, Social Security credits) matters as well as this year's childcare cost.
+Use this answer to filter pathways; do not repeat the number back in written materials.
+
+### Q12 — Where
+**Ask:** "Where do you want to work?"
+**Options:** in-person / hybrid / remote / any / not sure.
+
+### Q13 — What matters most
+**Ask:** "Which of these matter most to you right now? Pick your top 3, most important first — for example, 2, 1, 5."
+**Options:**
+1. Pay
+2. Hours
+3. In-person, hybrid, or remote
+4. A flexible schedule
+5. Getting back to work fastest
+6. Room to grow
+**If she picks fewer than 3:** accept it.
+**Feeds:** pathway filtering and ranking (see `pathways.md`). Her #1 never breaks. When nothing fits everything, the items she did not pick flex first, then her #3.
+
+**Exit:** skill profile + 2–3 pathways that passed the reality check (see `pathways.md`), each with honest fit reasoning (why it matches, pay range, training time and cost, flexibility). Ask which one to explore first.

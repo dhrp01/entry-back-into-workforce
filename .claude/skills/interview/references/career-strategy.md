@@ -7,9 +7,8 @@ Long-term career planning frameworks, cross-industry mobility data, and coaching
 Take these from the intake; ask only for what is missing:
 - Last paid role, field, and length (Q1) and credentials, including lapsed ones (Q3)
 - Skills found from her time at home (Q5)
-- What work must look like: hours, schedule, location, start date (Q6)
-- Pay need, if she gave one (Q7)
-- Interests and what matters most now (Q8–Q10)
+- What work must look like: schedule and start date (Q6); hours, pay, and location (Q10–Q12)
+- Interests (Q7–Q9) and her ranked top 3 (Q13)
 - Whether this is a necessity return (urgent income need)
 ---
 

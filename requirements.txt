@@ -1,0 +1,3 @@
+# Optional. The app runs on the Python standard library alone.
+# Install this to turn on the live refresher and the Claude resume review.
+anthropic

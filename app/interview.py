@@ -72,6 +72,7 @@ class Question(BaseModel):
 
 class QuestionReply(Question):
     demo_answer: str = ''
+    demo_skip: bool = False
 
 
 class SkillFinding(BaseModel):
@@ -248,7 +249,8 @@ async def next_question(request: InterviewRequest):
         if len(request.turns) >= len(steps):
             raise HTTPException(409, 'The demo recording has no more questions. Build the plan now.')
         step = steps[len(request.turns)]
-        return QuestionReply(**step['response'], demo_answer=step['answer'] or '')
+        return QuestionReply(**step['response'], demo_answer=step['answer'] or '',
+                             demo_skip=not step.get('highlight', True))
     return await run_in_threadpool(generate, request, Question, QUESTION_TASK, QUESTION_REFERENCES)
 
 

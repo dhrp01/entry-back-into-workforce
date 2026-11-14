@@ -1,38 +1,59 @@
 # 2-Minute Demo
 
-The demo replays a real interview that was recorded with Gemini ahead of time. On stage it makes no Gemini calls, so it is instant and does not use the free-tier limit.
+The demo replays a real interview that was recorded with Gemini ahead of time. On stage it makes no Gemini calls, so every screen is instant and it does not use the free-tier limit.
 
-## Setup (before you go on stage)
+## Setup (5 minutes before you go on stage)
 
-1. Start both servers in demo mode:
-   ```
-   INTERVIEW_DEMO=1 uvicorn app.main:app --port 8001
-   python3 server.py
-   ```
-2. Open `http://localhost:8000/#/demo`. This loads Melissa's onboarding answers and opens her summary.
-3. Zoom the browser to about 125% so the room can read it.
+Open two terminal windows in the `entry-back-into-workforce` folder.
 
-In demo mode, each question arrives with Melissa's answer already selected. Click **Continue** to move on. You can also tap a different option; the next screen is still the recorded one.
+**Terminal 1 — the interview API, in demo mode:**
+```
+INTERVIEW_DEMO=1 .venv/bin/python -m uvicorn app.main:app --port 8001
+```
+
+**Terminal 2 — the web app:**
+```
+.venv/bin/python server.py
+```
+
+Then, in the browser:
+
+1. Open `http://localhost:8000/#/demo`. It loads Melissa's onboarding answers and opens her summary.
+2. Zoom to about 125% so the room can read it.
+3. Click **Skills interview** in the top bar once, to check that the **Start conversation** button shows. Then click **Summary** to go back.
+
+To run it again, open `http://localhost:8000/#/demo` again. It resets the interview.
+
+## How the demo moves
+
+- Melissa's answer is already selected on every question. You only click **Continue**.
+- The demo stops only on six highlights. The questions between them answer themselves in a fraction of a second.
+- **Build my plan** shows the recorded plan at once.
 
 ## Timeline
 
-| Time | Screen | What you do | What you say |
+| Time | Screen | You click | You say |
 |---|---|---|---|
-| 0:00–0:15 | Landing page | Nothing | "This is Melissa. 38, Lehi, four kids. She taught second grade for five years, then stayed home for twelve. Her youngest just started kindergarten. She has opened LinkedIn twice and closed it twice." |
-| 0:15–0:25 | Summary | Show the onboarding summary | "She answered eight quick questions. Now she meets the coach." |
-| 0:25–0:40 | Skills interview, first question | Click **Start conversation** | Read the first line out loud: it says going back is hard and very common. "It never asks her again what onboarding already told it." |
-| 0:40–1:05 | Activity checklist and follow-ups | **Continue** through the checklist and its follow-ups | "We never ask 'what are your skills?' We ask what she *did*. PTA, the soccer league, the family budget. Each answer becomes a professional skill." Pause on the Part 2 payoff: "She just found N professional skills." |
-| 1:05–1:20 | Part 3 and the ranking | **Continue** quickly; slow down on the ranking | "She ranks what matters most. Her number one never breaks." |
-| 1:20–1:45 | Roadmap | Click **Build my plan**; scroll to **Pathways to explore** | "Three real pathways, each with why it fits *her*, what it takes, and a first step with a Utah resource. And it tells her what it could not verify." |
-| 1:45–2:00 | Roadmap | Stop scrolling | "Every claim comes from her own answers. Melissa leaves with a plan, not a reading list." |
+| 0:00–0:15 | Summary | Nothing | "This is Melissa. 38, Lehi, four kids. She taught second grade, then stayed home for twelve years. Her youngest just started kindergarten. She has opened LinkedIn twice and closed it twice." |
+| 0:15–0:30 | **Stop 1:** first question | **Skills interview**, then **Start conversation** | Point at the first line: "Coming back to paid work after years at home is hard and very common, and you're in the right place." Then: "It already knows her last job from onboarding. It never asks her twice." |
+| 0:30–0:45 | **Stop 2:** activity checklist | **Continue** | "We never ask 'what are your skills?' We ask what she *did*." Point at her picks: PTA, the soccer schedule, the family budget. |
+| 0:45–0:55 | **Stop 3:** PTA follow-up | **Continue** | "Raising $18,000 with 60 volunteers. That is fundraising, event planning, and volunteer coordination." |
+| 0:55–1:15 | **Stop 4:** the payoff | **Continue** | Read it: "You translated your time at home into 8 professional skills." "This is the moment she stops saying 'I have no skills.'" |
+| 1:15–1:25 | **Stop 5:** the ranking | **Continue** | "She ranks what matters most: a flexible schedule first. Her number one never breaks." |
+| 1:25–1:35 | **Stop 6:** closing | **Continue** | "It sums up her evidence: 22 of 26 second graders reading at grade level, a $95,000 budget, a 12-team league." |
+| 1:35–1:55 | The plan | **Build my plan**, then scroll to **Pathways to explore** | "Three pathways. Each says why it fits *her*, what it takes, a first step with a Utah resource, and what it could not verify." |
+| 1:55–2:00 | The plan | Nothing | "Every claim comes from her own answers. Melissa leaves with a plan, not a reading list." |
 
 ## If something goes wrong
 
-- **A screen shows an error:** the API server is not in demo mode or is not running. Restart it with `INTERVIEW_DEMO=1`.
-- **The interview shows old answers:** open `#/demo` again. It resets the interview.
+- **"Conversation server unavailable":** Terminal 1 is not running. Start it again.
+- **A real Gemini error, or a question that is not Melissa's:** Terminal 1 runs without `INTERVIEW_DEMO=1`. Stop it and start it again with the command above.
+- **Port 8000 is already in use:** another copy of `server.py` runs. Stop it, or start with `PORT=8010 .venv/bin/python server.py` and open `http://localhost:8010/#/demo`.
+- **Old answers show:** open `#/demo` again.
 
 ## How the recording works
 
-- `demo/user.json` holds Melissa's onboarding answers and her answer bank for the interview.
-- `demo/record.py` runs the interview against real Gemini, one step at a time, and saves each Gemini response with the answer Melissa gave to `demo/recording.json`.
-- In demo mode, `app/interview.py` returns step N of the recording when the conversation has N answers, and the recorded roadmap for the plan.
+- `demo/user.json` holds Melissa's onboarding answers and her answer bank.
+- `demo/record.py` ran the interview against real Gemini, one step at a time, and saved each response with her answer to `demo/recording.json`. Steps with `"highlight": true` are the six stops.
+- In demo mode, `app/interview.py` returns recorded step N when the conversation has N answers, and the recorded roadmap for the plan.
+- To record again: `python demo/record.py reset`, then `python demo/record.py answer --start` and `answer "<her answer>"` for each step, then `python demo/record.py roadmap`. It needs about 19 Gemini calls.

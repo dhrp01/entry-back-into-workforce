@@ -123,7 +123,7 @@ def test_demo_mode_replays_the_recording_without_gemini(monkeypatch, tmp_path):
     recording.write_text(json.dumps({
         'profile': {'name': 'Melissa'},
         'steps': [
-            {'response': {'intro': 'Hi.', 'question': 'How long?', 'options': ['3–5 years'], 'selection': 'single', 'done': False}, 'answer': '3–5 years', 'highlight': False},
+            {'response': {'intro': 'Hi.', 'question': 'How long?', 'options': ['3–5 years'], 'selection': 'single', 'done': False}, 'answer': '3–5 years'},
             {'response': {'intro': '', 'question': 'Ready?', 'options': [], 'selection': 'single', 'done': True}, 'answer': None},
         ],
         'roadmap': {'summary': 'Recorded plan', 'strengths': [], 'pathways': [], 'growth_areas': [], 'unknowns': [], 'steps': []},
@@ -135,9 +135,8 @@ def test_demo_mode_replays_the_recording_without_gemini(monkeypatch, tmp_path):
     with TestClient(app) as client:
         assert client.post('/interview/demo', json={}).json() == {'profile': {'name': 'Melissa'}}
         first = client.post('/interview/question', json={}).json()
-        assert first['question'] == 'How long?' and first['demo_answer'] == '3–5 years' and first['demo_skip'] is True
-        last = client.post('/interview/question', json={'turns': [turn]}).json()
-        assert last['done'] is True and last['demo_skip'] is False
+        assert first['question'] == 'How long?' and first['demo_answer'] == '3–5 years' 
+        assert client.post('/interview/question', json={'turns': [turn]}).json()['done'] is True
         assert client.post('/interview/question', json={'turns': [turn, turn]}).status_code == 409
         assert client.post('/interview/roadmap', json={}).json()['summary'] == 'Recorded plan'
 
